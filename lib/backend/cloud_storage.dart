@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 
 final db = FirebaseFirestore.instance;
 // final ingredientCollectionRef = db.collection('raw-materials');
-final ingredientCollectionRef = db.collection('stock');
+final ingredientCollectionRef = db.collection('raw-materials');
 
 class Ingredient {
   Ingredient(this.name, this.subUnit, this.quantity, this.rate);
@@ -19,7 +19,8 @@ Future<List<Ingredient>> fetchIngredientsData() async {
 
   return querySnapshot.docs
       .map(
-        (doc) => Ingredient(doc.id, doc['unit'], doc['quantity'], doc['price']),
+        (doc) => Ingredient(
+            doc.id, doc['unit'], doc['quantity'], doc['pricePerUnit']),
       )
       .toList();
 }
