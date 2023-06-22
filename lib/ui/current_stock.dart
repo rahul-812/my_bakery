@@ -14,6 +14,10 @@ class CurrentStockPage extends StatelessWidget {
   Widget build(BuildContext context) {
     debugPrint('current stock built...');
 
+    stock.then((value) {}).onError((error, stackTrace) {
+      debugPrint(error.toString());
+    });
+
     return SingleChildScrollView(
       child: Column(
         children: [
