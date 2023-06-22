@@ -152,13 +152,10 @@ class GoodsTile extends StatelessWidget {
       ),
       title: Text(
         ingredient.name,
-        style: textTheme.bodyMedium?.copyWith(fontSize: 16.0),
+        style: textTheme.bodyLarge,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: SizedBox(
-        width: 120.0,
-        child: IngredientMonitor(key: ingredientKey, ingredient: ingredient),
-      ),
+      subtitle: IngredientMonitor(key: ingredientKey, ingredient: ingredient),
     );
   }
 }
@@ -204,10 +201,6 @@ class EditStockDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      priceController.text = ingredient.rate.toString();
-    });
-
     final textTheme = Theme.of(context).textTheme;
     final inputTextStyle = textTheme.bodyLarge?.copyWith(
       fontWeight: FontWeight.w500,
@@ -233,34 +226,44 @@ class EditStockDialog extends StatelessWidget {
           const SizedBox(height: 20.0),
           Form(
             key: _formKey,
-            child: _buildTextField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Enter additional quantity';
-                }
-                return null;
-              },
-              controller: quantityController,
-              label: 'Restock Amount',
-              inputTextStyle: inputTextStyle,
-              suffix: Text(
-                ingredient.subUnit,
-                style: extremeTextStyle,
-              ),
-            ),
-          ),
-          const SizedBox(height: 10.0),
-          _buildTextField(
-            controller: priceController,
-            label: 'Rate',
-            inputTextStyle: inputTextStyle,
-            prefix: const Text(
-              '₹',
-              style: extremeTextStyle,
-            ),
-            suffix: Text(
-              '(per ${ingredient.subUnit})',
-              style: extremeTextStyle,
+            child: Column(
+              children: [
+                _buildTextField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter additional quantity';
+                    }
+                    return null;
+                  },
+                  controller: quantityController,
+                  label: 'Incoming Quantity',
+                  inputTextStyle: inputTextStyle,
+                  suffix: Text(
+                    ingredient.subUnit,
+                    style: extremeTextStyle,
+                  ),
+                ),
+                const SizedBox(height: 10.0),
+                _buildTextField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Required total cost money';
+                    }
+                    return null;
+                  },
+                  controller: priceController,
+                  label: 'Total Price',
+                  inputTextStyle: inputTextStyle,
+                  prefix: const Text(
+                    '₹',
+                    style: extremeTextStyle,
+                  ),
+                  suffix: Text(
+                    '(per ${ingredient.subUnit})',
+                    style: extremeTextStyle,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -281,21 +284,26 @@ class EditStockDialog extends StatelessWidget {
             if (!_formKey.currentState!.validate()) {
               return;
             }
-            final newRate = num.parse(priceController.text);
-            final newQuantity =
-                ingredient.quantity + num.parse(quantityController.text);
 
-            final isSameRate = ingredient.rate == newRate;
-            updateIngredients(
-              ingredient.name,
-              newQuantity,
-              isSameRate ? null : newRate,
+            final totalPrice = num.parse(priceController.text);
+            final addedQuantity = num.parse(quantityController.text);
+
+            num averageRate = double.parse(
+              (((ingredient.rate * ingredient.quantity) + totalPrice) /
+                      (ingredient.quantity + addedQuantity))
+                  .toStringAsFixed(2),
+            );
+
+            updateIngredientDetails(
+              ingredient,
+              addedQuantity,
+              totalPrice,
+              averageRate,
             );
 
             Navigator.of(context).pop();
-
-            ingredient.quantity = newQuantity;
-            if (!isSameRate) ingredient.rate = newRate;
+            ingredient.quantity += addedQuantity;
+            ingredient.rate = averageRate;
             quantityKey.currentState!.updateUi();
           },
           child: Text(

@@ -31,6 +31,11 @@ class IngredientMonitorState extends State<IngredientMonitor> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
+            Text(
+              'Avg',
+              style: textTheme.bodyMedium,
+            ),
+            const SizedBox(width: 10.0),
             const Text(
               '₹',
               style: TextStyle(color: LightColors.main, fontSize: 16.0),
