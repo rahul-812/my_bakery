@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:my_bakery/backend/cloud_storage.dart';
 
+// common type of the best quantity
+
 import '../colors.dart';
 import 'stock_widgets.dart';
 
