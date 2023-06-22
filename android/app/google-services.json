@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "175256249792",
+    "project_id": "swadesh-bakery",
+    "storage_bucket": "swadesh-bakery.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:175256249792:android:7de6bd7114e1a9e9999425",
+        "android_client_info": {
+          "package_name": "com.example.my_bakery"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "175256249792-853nj9igqhjijhb182n67p5bddmp3fbv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBue3_qUv9wKj1hXYVMqlE2S-hQswEEGTA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "175256249792-853nj9igqhjijhb182n67p5bddmp3fbv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
