@@ -53,12 +53,16 @@ class _MyWidgetState extends State<MyWidget>
         TabBar(
           isScrollable: true,
           controller: _controller,
-          tabs: [Tab()],
+          tabs: const [
+            Tab(child: Text('Tab 1')),
+            Tab(child: Text('Tab 2')),
+            Tab(child: Text('Tab 3')),
+          ],
         ),
         Expanded(
           child: TabBarView(
             controller: _controller,
-            children: [
+            children: const [
               Text('Hello'),
               Text('Hello'),
               Text('Hello'),
