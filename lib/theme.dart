@@ -20,7 +20,9 @@ class CustomTheme {
         bodySmall: TextStyle(color: LightColors.greyM),
       ),
       dialogTheme: const DialogTheme(elevation: 0.0),
-      dividerColor: const Color(0xffccd8e8),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        selectedItemColor: LightColors.secondary,
+      ),
     );
   }
 }

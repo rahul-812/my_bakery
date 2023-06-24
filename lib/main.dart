@@ -62,7 +62,7 @@ class _UiPageHolderState extends State<UiPageHolder> {
         actions: const [
           Icon(
             Icons.cake,
-            color: LightColors.main,
+            color: LightColors.secondary,
           ),
           SizedBox(width: 30.0),
         ],
@@ -71,17 +71,27 @@ class _UiPageHolderState extends State<UiPageHolder> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.factory_rounded),
+            icon: Icon(
+              _currentIndex != 0
+                  ? Icons.factory_outlined
+                  : Icons.factory_rounded,
+            ),
             label: 'Stock',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.cookie_rounded),
+            icon: Icon(
+              _currentIndex != 1 ? Icons.cookie_outlined : Icons.cookie_rounded,
+            ),
             label: 'Products',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.access_time_filled_rounded),
+            icon: Icon(
+              _currentIndex != 2
+                  ? Icons.access_time_sharp
+                  : Icons.access_time_filled,
+            ),
             label: 'History',
           )
         ],

@@ -15,37 +15,37 @@ class CurrentStockPage extends StatelessWidget {
     return SingleChildScrollView(
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(padding),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                // Expanded(
-                //   child: SubmitBox(
-                //     total: 22,
-                //     desc: 'Items Stored In Good Quantity',
-                //     background: LightColors.main,
-                //     color: Colors.white,
-                //   ),
-                // ),
-                // SizedBox(width: 14.0),
-                // Expanded(
-                //   child: SubmitBox(
-                //     total: 3,
-                //     desc: 'Items Finished Or Almost Finished',
-                //     background: LightColors.red,
-                //     color: Colors.white,
-                //   ),
-                // ),
-              ],
-            ),
-          ),
-          const Image(
-            width: 160.0,
-            height: 160.0,
-            image: AssetImage('images/cake.webp'),
-          ),
-          const SizedBox(height: 20.0),
+          // Padding(
+          //   padding: const EdgeInsets.all(padding),
+          //   child: Row(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: const [
+          // Expanded(
+          //   child: SubmitBox(
+          //     total: 22,
+          //     desc: 'Items Stored In Good Quantity',
+          //     background: LightColors.main,
+          //     color: Colors.white,
+          //   ),
+          // ),
+          // SizedBox(width: 14.0),
+          // Expanded(
+          //   child: SubmitBox(
+          //     total: 3,
+          //     desc: 'Items Finished Or Almost Finished',
+          //     background: LightColors.red,
+          //     color: Colors.white,
+          //   ),
+          // ),
+          //   ],
+          // ),
+          // ),
+          // const Image(
+          //   width: 160.0,
+          //   height: 160.0,
+          //   image: AssetImage('images/cake.webp'),
+          // ),
+          // const SizedBox(height: 20.0),
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 18.0, vertical: 18.0),
