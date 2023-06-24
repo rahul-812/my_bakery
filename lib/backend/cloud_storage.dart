@@ -60,7 +60,7 @@ class PurchaseHistory {
   factory PurchaseHistory.fromMap(Map<String, dynamic> map) {
     return PurchaseHistory(
       map['name'],
-      DateFormat('d MMMM, yyyy').format(map['date'] as DateTime),
+      DateFormat('MMM dd, yyyy').format((map['date'] as Timestamp).toDate()),
       map['previousQuantity'],
       map['addedQuantity'],
       map['pricePerUnit'],
@@ -70,12 +70,14 @@ class PurchaseHistory {
 }
 
 Future<List<PurchaseHistory>> fetchPurchaseRecords(
-    DateTime startDate, DateTime endDate) async {
+  DateTime startDate,
+  DateTime endDate,
+) async {
   final querySnapshot = await db
-      .collection('purchase-record')
+      .collection('purchase-history')
       .where('date', isGreaterThanOrEqualTo: startDate)
       .where('date', isLessThanOrEqualTo: endDate)
-      .orderBy('date')
+      .orderBy('date', descending: true)
       .get();
 
   return querySnapshot.docs

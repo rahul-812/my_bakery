@@ -12,6 +12,59 @@ class DepartmentsPage extends StatelessWidget {
           height: 200.0,
           image: AssetImage('images/apple_pie.webp'),
         ),
+        SizedBox(height: 20.0),
+        MyWidget(),
+      ],
+    );
+  }
+}
+
+class MyWidget extends StatefulWidget {
+  const MyWidget({super.key});
+
+  @override
+  State<MyWidget> createState() => _MyWidgetState();
+}
+
+class _MyWidgetState extends State<MyWidget>
+    with SingleTickerProviderStateMixin {
+  late final TabController _controller;
+  // late final List<Tab> _tabs;
+  // late final List<Widget> _views;
+
+  @override
+  void initState() {
+    super.initState();
+    // _tabs = List.generate(
+    //     3,
+    //     (index) => Tab(
+    //           text: 'Buiscuit$index',
+    //         ));
+    // _controller = TabController(length: _tabs.length, vsync: this);
+
+    // _views = List.generate(
+    //     _tabs.length, (index) => Center(child: Text('Page$index')));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TabBar(
+          isScrollable: true,
+          controller: _controller,
+          tabs: [Tab()],
+        ),
+        Expanded(
+          child: TabBarView(
+            controller: _controller,
+            children: [
+              Text('Hello'),
+              Text('Hello'),
+              Text('Hello'),
+            ],
+          ),
+        ),
       ],
     );
   }
