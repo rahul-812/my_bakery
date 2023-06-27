@@ -208,7 +208,7 @@ class EditStockDialog extends StatelessWidget {
       title: Text(
         ingredient.name,
         textAlign: TextAlign.center,
-        style: textTheme.titleLarge?.copyWith(color: LightColors.black),
+        style: textTheme.titleLarge?.copyWith(color: LightColors.textColor),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,

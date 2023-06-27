@@ -49,7 +49,7 @@ class IngredientMonitorState extends State<IngredientMonitor> {
         isOutOfStock
             ? const Icon(
                 Icons.warning_rounded,
-                color: LightColors.brown,
+                color: LightColors.warningColor,
                 size: 30.0,
               )
             : Row(

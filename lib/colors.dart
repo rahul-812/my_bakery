@@ -2,20 +2,12 @@ import 'dart:ui';
 
 mixin LightColors {
   static const Color bg = Color(0xff1f1f1f);
-  static const Color surface = Color(0xff363a3f);
   static const Color main = Color(0xff3869ff);
   static const Color secondary = Color(0xFF00D8B8);
-  static const Color blue = Color(0xff062e6f);
-  static const Color black = Color(0xff1f1f1f);
-  static const Color grey = Color(0xffc4c7c5);
-  static const Color greyM = Color(0xff7e7e7e);
-  static const Color darkGrey = Color(0xFF50535A);
-  static const Color blueGrey = Color(0xfff4f6fa);
-  static const Color green = Color(0xff23cf96);
-  static const Color red = Color(0xffee675c);
-  static const Color orange = Color(0xFFF3B564);
-  static const Color brown = Color(0xfff27968);
-  static const Color bluishBlack = Color.fromARGB(255, 55, 57, 71);
+  static const Color textColor = Color(0xff394347);
+  static const Color textMediumColor = Color(0xFF50535a);
+  static const Color lightTextColor = Color(0xff97a1b6);
+  static const Color warningColor = Color(0xfff27968);
 }
 
 class AccentColors {

@@ -22,7 +22,11 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: CustomTheme.light,
-      home: const UiPageHolder(),
+      // home: const UiPageHolder(),
+      home: Scaffold(
+        appBar: AppBar(title: const Text('SwadeshBakery')),
+        body: const DepartmentsPage(),
+      ),
     );
   }
 }
