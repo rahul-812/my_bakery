@@ -8,6 +8,7 @@ mixin LightColors {
   static const Color textMediumColor = Color(0xFF50535a);
   static const Color lightTextColor = Color(0xff97a1b6);
   static const Color warningColor = Color(0xfff27968);
+  static const Color shadowColor = Color(0x230054ff);
 }
 
 class AccentColors {

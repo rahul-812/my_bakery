@@ -19,18 +19,22 @@ class CustomTheme {
         bodyMedium: TextStyle(color: LightColors.textMediumColor),
         bodySmall: TextStyle(color: LightColors.lightTextColor),
       ),
-      shadowColor: const Color(0x230054FF),
-      dividerColor: const Color(0xffedeef1),
+      dividerTheme: const DividerThemeData(
+        color: Color(0xffedeef1),
+      ),
       dialogTheme: const DialogTheme(elevation: 0.0),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         selectedItemColor: LightColors.secondary,
       ),
-      splashFactory: InkRipple.splashFactory,
       tabBarTheme: TabBarTheme(
+        splashFactory: InkRipple.splashFactory,
         labelColor: const Color(0xffbe500f),
         unselectedLabelColor: LightColors.lightTextColor,
         indicatorSize: TabBarIndicatorSize.tab,
-        labelPadding: const EdgeInsets.all(12.0),
+        labelPadding: const EdgeInsets.symmetric(
+          horizontal: 12.0,
+          // vertical: 5.0,
+        ),
         indicator: BoxDecoration(
           color: const Color(0xffffe1d0),
           borderRadius: BorderRadius.circular(12.0),
