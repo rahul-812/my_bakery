@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_bakery/colors.dart';
 
+import 'my_widgets.dart';
+
 class DepartmentsPage extends StatelessWidget {
   const DepartmentsPage({super.key});
 
@@ -157,7 +159,7 @@ class ProductList extends StatelessWidget {
         onTap: () {
           showModalBottomSheet(
             context: context,
-            builder: (_) => const SizedBox(height: 40),
+            builder: (_) => const ProductBottomSheet(),
           );
         },
         leading: SvgPicture.asset(
@@ -194,6 +196,26 @@ class ProductList extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class ProductBottomSheet extends StatelessWidget {
+  const ProductBottomSheet({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(40.0),
+      child: Column(
+        children: [
+          Text("Today's Batch", style: Theme.of(context).textTheme.bodyLarge),
+          const SizedBox(height: 20.0),
+          const MyTextField(label: 'Batches'),
+          const SizedBox(height: 20.0),
+          const MyTextField(label: 'Packets'),
+        ],
       ),
     );
   }

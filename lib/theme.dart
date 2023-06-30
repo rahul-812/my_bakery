@@ -15,9 +15,16 @@ class CustomTheme {
         scrolledUnderElevation: 0.0,
       ),
       textTheme: const TextTheme(
-        bodyLarge: TextStyle(color: LightColors.textColor),
+        bodyLarge: TextStyle(
+          color: LightColors.textColor,
+          fontWeight: FontWeight.w500,
+        ),
         bodyMedium: TextStyle(color: LightColors.textMediumColor),
         bodySmall: TextStyle(color: LightColors.lightTextColor),
+      ),
+      inputDecorationTheme: const InputDecorationTheme(
+        isDense: true,
+        border: OutlineInputBorder(),
       ),
       dividerTheme: const DividerThemeData(
         color: Color(0xffedeef1),

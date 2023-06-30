@@ -5,7 +5,7 @@ import 'package:my_bakery/backend/cloud_storage.dart';
 // common type of the best quantity
 
 import '../colors.dart';
-import 'stock_widgets.dart';
+import 'my_widgets.dart';
 
 class CurrentStockPage extends StatelessWidget {
   CurrentStockPage({Key? key}) : super(key: key);
@@ -118,7 +118,6 @@ class GoodsTile extends StatelessWidget {
 
   final Ingredient ingredient;
   final Color avatarColor;
-  final ingredientKey = GlobalKey<IngredientMonitorState>();
   final Stream stream;
 
   void _openEditDialog(BuildContext context) {
@@ -127,7 +126,6 @@ class GoodsTile extends StatelessWidget {
       builder: (context) {
         return EditStockDialog(
           ingredient: ingredient,
-          quantityKey: ingredientKey,
         );
       },
     );
@@ -233,47 +231,16 @@ class EditStockDialog extends StatelessWidget {
   EditStockDialog({
     super.key,
     required this.ingredient,
-    required this.quantityKey,
   });
   final Ingredient ingredient;
   final TextEditingController priceController = TextEditingController();
   final TextEditingController quantityController = TextEditingController();
-  final GlobalKey<IngredientMonitorState> quantityKey;
 
   final _formKey = GlobalKey<FormState>();
-
-  Widget _buildTextField({
-    Key? key,
-    required TextEditingController controller,
-    required String label,
-    TextStyle? inputTextStyle,
-    String? Function(String?)? validator,
-    Widget? suffix,
-    Widget? prefix,
-  }) {
-    return TextFormField(
-      key: key,
-      validator: validator,
-      style: inputTextStyle,
-      controller: controller,
-      textAlign: TextAlign.center,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        isDense: true,
-        labelText: label,
-        border: const OutlineInputBorder(),
-        prefix: prefix,
-        suffix: suffix,
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final inputTextStyle = textTheme.bodyLarge?.copyWith(
-      fontWeight: FontWeight.w500,
-    );
     const extremeTextStyle = TextStyle(
       color: LightColors.main,
       fontSize: 16.0,
@@ -297,7 +264,7 @@ class EditStockDialog extends StatelessWidget {
             key: _formKey,
             child: Column(
               children: [
-                _buildTextField(
+                MyTextField(
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Enter additional quantity';
@@ -306,14 +273,13 @@ class EditStockDialog extends StatelessWidget {
                   },
                   controller: quantityController,
                   label: 'Incoming Quantity',
-                  inputTextStyle: inputTextStyle,
                   suffix: Text(
                     ingredient.subUnit,
                     style: extremeTextStyle,
                   ),
                 ),
                 const SizedBox(height: 10.0),
-                _buildTextField(
+                MyTextField(
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Required total cost money';
@@ -322,7 +288,6 @@ class EditStockDialog extends StatelessWidget {
                   },
                   controller: priceController,
                   label: 'Total Price',
-                  inputTextStyle: inputTextStyle,
                   prefix: const Text(
                     '₹',
                     style: extremeTextStyle,
