@@ -7,7 +7,6 @@ final ingredientCollectionRef = db.collection('raw-materials');
 
 class Ingredient {
   Ingredient(this.name, this.subUnit, this.quantity, this.rate);
-
   final String name;
   final String subUnit;
   num quantity;
@@ -23,7 +22,6 @@ class Ingredient {
 
 Future<List<List<dynamic>>> fetchIngredientsData() async {
   final querySnapshot = await ingredientCollectionRef.get();
-
   return [
     querySnapshot.docs
         .map(
@@ -114,7 +112,7 @@ Future<void> addPurchaseRecord(
   });
 }
 
-Future<void> updateIngredientDetails(
+Future<void> fetchProductDetails(
   Ingredient ingredient,
   num addedQuantity,
   num totalPrice,
