@@ -22,12 +22,12 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: CustomTheme.light,
-      // home: const UiPageHolder(),
-      home: Scaffold(
-        backgroundColor: const Color(0xFFF5F5F8),
-        appBar: AppBar(title: const Text('SwadeshBakery')),
-        body: const DepartmentsPage(),
-      ),
+      home: const UiPageHolder(),
+      // home: Scaffold(
+      //   backgroundColor: const Color(0xFFF5F5F8),
+      //   appBar: AppBar(title: const Text('SwadeshBakery')),
+      //   body: const DepartmentsPage(),
+      // ),
     );
   }
 }
@@ -61,6 +61,7 @@ class _UiPageHolderState extends State<UiPageHolder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: _currentIndex == 1 ? const Color(0xFFF5F5F8) : null,
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Swadesh Bakery'),

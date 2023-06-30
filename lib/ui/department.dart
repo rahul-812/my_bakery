@@ -14,37 +14,29 @@ class DepartmentsPage extends StatelessWidget {
       child: Column(
         // mainAxisSize: MainAxisSize.min,
         children: [
-          const SizedBox(height: 20.0),
-          SvgPicture.asset(
-            'images/cookie.svg',
-            width: 150.0,
-            height: 150.0,
-            // image: AssetImage('images/apple_pie.webp'),
+          // const SizedBox(height: 20.0),
+          // SvgPicture.asset(
+          //   'images/cookie.svg',
+          //   width: 150.0,
+          //   height: 150.0,
+          //   // image: AssetImage('images/apple_pie.webp'),
+          // ),
+          // const Padding(
+          //   padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
+          //   child: Text(
+          //     'Choose products under the depertments',
+          //     textAlign: TextAlign.center,
+          //   ),
+          // ),
+          // const SizedBox(height: 10.0),
+          const CustomCard(
+            height: 100.0,
+            margin: EdgeInsets.all(10.0),
+            child: Text('Check card'),
           ),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
-            child: Text(
-              'Choose products under the depertments',
-              textAlign: TextAlign.center,
-            ),
-          ),
-          const SizedBox(height: 10.0),
-          Container(
-            alignment: Alignment.center,
-            margin: const EdgeInsets.symmetric(horizontal: 16.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(12.0),
-              boxShadow: const [
-                BoxShadow(
-                  color: LightColors.shadowColor,
-                  blurRadius: 4,
-                  offset: Offset(0, 1),
-                  spreadRadius: -1,
-                ),
-              ],
-            ),
-            child: const TabBar(
+          const CustomCard(
+            margin: EdgeInsets.symmetric(horizontal: 10.0),
+            child: TabBar(
               isScrollable: true,
               padding: EdgeInsets.symmetric(vertical: 6.0),
               tabs: [
@@ -57,10 +49,16 @@ class DepartmentsPage extends StatelessWidget {
           ),
           Expanded(
             child: CustomCard(
+              padding: const EdgeInsets.all(8.0),
+              margin: const EdgeInsets.all(10.0),
               child: TabBarView(
                 children: [
                   ProductList(
-                    iconPath: 'images/cake.svg',
+                    iconPath: 'images/bread.svg',
+                    theme: textTheme,
+                  ),
+                  ProductList(
+                    iconPath: 'images/cookie.svg',
                     theme: textTheme,
                   ),
                   ProductList(
@@ -68,11 +66,7 @@ class DepartmentsPage extends StatelessWidget {
                     theme: textTheme,
                   ),
                   ProductList(
-                    iconPath: 'images/cake.svg',
-                    theme: textTheme,
-                  ),
-                  ProductList(
-                    iconPath: 'images/cake.svg',
+                    iconPath: 'images/candy.svg',
                     theme: textTheme,
                   ),
                 ],
@@ -106,21 +100,33 @@ class CustomTab extends StatelessWidget {
 }
 
 class CustomCard extends StatelessWidget {
-  const CustomCard({super.key, required this.child});
+  const CustomCard({
+    super.key,
+    this.child,
+    this.height,
+    this.margin,
+    this.padding,
+  });
 
-  final Widget child;
+  final Widget? child;
+  final double? height;
+  final EdgeInsetsGeometry? margin;
+  final EdgeInsetsGeometry? padding;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(16.0),
+      alignment: Alignment.center,
+      height: height,
+      margin: margin,
+      padding: padding,
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12.0),
         boxShadow: const [
           BoxShadow(
             color: LightColors.shadowColor,
-            blurRadius: 4,
+            blurRadius: 3,
             offset: Offset(0, 1),
             spreadRadius: -1,
           ),
@@ -144,12 +150,15 @@ class ProductList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      itemCount: 3,
-      padding: const EdgeInsets.all(12.0),
+      itemCount: 12,
+      // padding: const EdgeInsets.all(12.0),
       separatorBuilder: (_, __) => const Divider(),
       itemBuilder: (_, index) => ListTile(
         onTap: () {
-          debugPrint('opening bottom sheet...');
+          showModalBottomSheet(
+            context: context,
+            builder: (_) => const SizedBox(height: 40),
+          );
         },
         leading: SvgPicture.asset(
           iconPath,

@@ -28,7 +28,8 @@ class CustomTheme {
       ),
       tabBarTheme: TabBarTheme(
         splashFactory: InkRipple.splashFactory,
-        labelColor: const Color(0xffbe500f),
+        // labelColor: const Color(0xffbe500f),
+        labelColor: Colors.white,
         unselectedLabelColor: LightColors.lightTextColor,
         indicatorSize: TabBarIndicatorSize.tab,
         labelPadding: const EdgeInsets.symmetric(
@@ -36,8 +37,8 @@ class CustomTheme {
           // vertical: 5.0,
         ),
         indicator: BoxDecoration(
-          color: const Color(0xffffe1d0),
-          borderRadius: BorderRadius.circular(12.0),
+          color: const Color(0xFF4C515E),
+          borderRadius: BorderRadius.circular(8.0),
         ),
       ),
     );

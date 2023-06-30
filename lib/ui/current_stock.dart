@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:my_bakery/backend/cloud_storage.dart';
 
@@ -8,7 +9,7 @@ import 'stock_widgets.dart';
 
 class CurrentStockPage extends StatelessWidget {
   CurrentStockPage({Key? key}) : super(key: key);
-  final Future<List<Ingredient>> stock = fetchIngredientsData();
+  final stock = fetchIngredientsData();
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +62,7 @@ class CurrentStockPage extends StatelessWidget {
               ],
             ),
           ),
-          FutureBuilder<List<Ingredient>>(
+          FutureBuilder<List<dynamic>>(
             future: stock,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
@@ -83,19 +84,23 @@ class CurrentStockPage extends StatelessWidget {
 class StockList extends StatelessWidget {
   const StockList({super.key, required this.list});
 
-  final List<Ingredient> list;
+  final List<dynamic> list;
 
   @override
   Widget build(BuildContext context) {
     final accentColors = AccentColors();
 
+    final ingredientList = list[0] as List<Ingredient>;
+    final snapshots = list[1] as List<Stream>;
+
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      itemCount: list.length,
+      itemCount: ingredientList.length,
       itemBuilder: (context, index) => GoodsTile(
-        ingredient: list[index],
+        ingredient: ingredientList[index],
+        stream: snapshots[index],
         avatarColor: accentColors.next,
       ),
       separatorBuilder: (context, index) => const SizedBox(height: 5.0),
@@ -104,11 +109,17 @@ class StockList extends StatelessWidget {
 }
 
 class GoodsTile extends StatelessWidget {
-  GoodsTile({super.key, required this.ingredient, required this.avatarColor});
+  GoodsTile({
+    super.key,
+    required this.ingredient,
+    required this.stream,
+    required this.avatarColor,
+  });
 
   final Ingredient ingredient;
   final Color avatarColor;
   final ingredientKey = GlobalKey<IngredientMonitorState>();
+  final Stream stream;
 
   void _openEditDialog(BuildContext context) {
     showDialog(
@@ -149,7 +160,71 @@ class GoodsTile extends StatelessWidget {
         style: textTheme.bodyLarge,
         overflow: TextOverflow.ellipsis,
       ),
-      subtitle: IngredientMonitor(key: ingredientKey, ingredient: ingredient),
+      subtitle: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            'Avg',
+            style: textTheme.bodyMedium,
+          ),
+          const SizedBox(width: 10.0),
+          const Text(
+            '₹',
+            style: TextStyle(color: LightColors.main, fontSize: 16.0),
+          ),
+          StreamBuilder(
+            stream: stream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final avgRate = (snapshot.data! as DocumentSnapshot<
+                    Map<String, dynamic>>)['pricePerUnit'] as num;
+                return Text(
+                  '$avgRate/${ingredient.subUnit}',
+                  style: textTheme.bodyMedium,
+                );
+              }
+              return const SizedBox();
+            },
+          ),
+        ],
+      ),
+      trailing: StreamBuilder(
+        stream: stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final quantity = (snapshot.data!
+                as DocumentSnapshot<Map<String, dynamic>>)['quantity'] as num;
+
+            return quantity == 0
+                ? const Icon(
+                    Icons.warning_rounded,
+                    color: LightColors.warningColor,
+                    size: 30.0,
+                  )
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '$quantity',
+                        style: textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 4.0),
+                      Text(
+                        ingredient.subUnit,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: LightColors.main,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  );
+          }
+          return const SizedBox();
+        },
+      ),
     );
   }
 }
@@ -288,17 +363,19 @@ class EditStockDialog extends StatelessWidget {
                   .toStringAsFixed(2),
             );
 
+            Navigator.of(context).pop();
+
             updateIngredientDetails(
               ingredient,
               addedQuantity,
               totalPrice,
               averageRate,
-            );
+            ).then((_) {
+              ingredient.quantity += addedQuantity;
+              ingredient.rate = averageRate;
+            });
 
-            Navigator.of(context).pop();
-            ingredient.quantity += addedQuantity;
-            ingredient.rate = averageRate;
-            quantityKey.currentState!.updateUi();
+            // quantityKey.currentState!.updateUi();
           },
           child: Text(
             'Done',
