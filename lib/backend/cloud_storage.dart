@@ -7,6 +7,7 @@ final ingredientCollectionRef = db.collection('raw-materials');
 
 class Ingredient {
   Ingredient(this.name, this.subUnit, this.quantity, this.rate);
+
   final String name;
   final String subUnit;
   num quantity;
@@ -22,6 +23,7 @@ class Ingredient {
 
 Future<List<List<dynamic>>> fetchIngredientsData() async {
   final querySnapshot = await ingredientCollectionRef.get();
+
   return [
     querySnapshot.docs
         .map(
@@ -42,13 +44,13 @@ Future<Ingredient> fetchAIngredientData(String ingredientName) async {
       documentSnapshot.data()?['quantity'], documentSnapshot.data()?['rate']);
 }
 
-Future<dynamic> updateIngredients(
-    String goodsName, num newQuantity, num? price) async {
-  return await db
-      .collection('stock')
-      .doc(goodsName)
-      .update({'quantity': newQuantity, if (price != null) 'price': price});
-}
+// Future<dynamic> updateIngredients(
+//     String goodsName, num newQuantity, num? price) async {
+//   return await db
+//       .collection('stock')
+//       .doc(goodsName)
+//       .update({'quantity': newQuantity, if (price != null) 'price': price});
+// }
 
 class PurchaseHistory {
   final String name;
@@ -112,7 +114,7 @@ Future<void> addPurchaseRecord(
   });
 }
 
-Future<void> fetchProductDetails(
+Future<void> updateIngredientDetails(
   Ingredient ingredient,
   num addedQuantity,
   num totalPrice,
