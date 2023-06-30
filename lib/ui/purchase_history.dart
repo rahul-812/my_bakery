@@ -19,7 +19,7 @@ class PurchaseHistoryPage extends StatelessWidget {
           debugPrint("List: ${snapshot.data!.length}");
           return ListView(
             children: [
-              const SizedBox(height: 50.0),
+              const SizedBox(height: 10.0),
               Center(
                 child: Text(
                   'Purchase History',
@@ -115,35 +115,50 @@ class HistoryTable extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(18.0),
-      scrollDirection: Axis.horizontal,
-      child: DataTable(
+    return DataTable(
+      
+        dataTextStyle: const TextStyle(
+          fontSize: 12.5,
+          color: Colors.grey,
+        ),
         headingTextStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w600,
+              fontSize: 12.5,
+              color: Colors.deepPurpleAccent
             ),
         dividerThickness: 0.0,
         showBottomBorder: true,
+        columnSpacing: 10,
         columns: const [
-          DataColumn(label: Text('Date')),
-          DataColumn(label: Text('Name')),
-          DataColumn(label: Text('Added')),
-          DataColumn(label: Text('Previous')),
-          DataColumn(label: Text('Rate')),
-          DataColumn(label: Text('Cost')),
+          DataColumn(label: Text('DATE')),
+          DataColumn(label: Text('NAME')),
+          DataColumn(label: Text('QUANTITY')),
+          DataColumn(label: Text('ADDED')),
+          DataColumn(label: Text('RATE')),
+          DataColumn(label: Text('TOTAL')),
         ],
         rows: List.generate(history.length, (index) {
           final currentItem = history[index];
           return DataRow(cells: [
             DataCell(Text(currentItem.date)),
-            DataCell(Text(currentItem.name)),
-            DataCell(Text('${currentItem.addedQuantity} KG')),
-            DataCell(Text('${currentItem.previousQuantity} KG')),
-            DataCell(Text('₹${currentItem.rate}/KG')),
+            DataCell(Wrap(
+                  alignment: WrapAlignment.center,
+                  children: [
+                    Text(
+                      currentItem.name,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
+                ),
+              ),
+            DataCell(Text('${currentItem.previousQuantity}')),
+            DataCell(Text('${currentItem.addedQuantity}')),
+            DataCell(Text('₹${currentItem.rate}')),
             DataCell(Text('₹${currentItem.totalPrice}')),
           ]);
         }),
-      ),
     );
   }
+    
+
 }
