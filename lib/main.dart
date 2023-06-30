@@ -23,11 +23,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: CustomTheme.light,
       home: const UiPageHolder(),
-      // home: Scaffold(
-      //   backgroundColor: const Color(0xFFF5F5F8),
-      //   appBar: AppBar(title: const Text('SwadeshBakery')),
-      //   body: const DepartmentsPage(),
-      // ),
     );
   }
 }
