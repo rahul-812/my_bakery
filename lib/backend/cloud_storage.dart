@@ -226,19 +226,43 @@ Future<void> calculateRequirementsAndPrice(
   Map<String, TextEditingController> priceControllers = {
     'Maida': TextEditingController()
   };
+  Future<void> calculateRequirementsAndPrice(
+      Map<String, dynamic> ingredientRequirements, num batch) async {
+    Map<String, Ingredient> ingredientsMap = formatIngredientsData(
+        (await fetchIngredientsData()).cast<Ingredient>());
+    ingredientRequirements.forEach((key, value) {
+      if (ingredientsMap[key]!.quantity >= value * batch) {
+        quantityControllers[key]?.text = value * batch;
+        priceControllers[key]?.text =
+            (ingredientsMap[key]!.latestRate * value * batch)
+                .toStringAsFixed(2);
+      } else {
+        //showWarning(insufficient '$key');
+      }
+    });
+  }
 
-  ingredientRequirements.forEach((key, value) {
-    quantityControllers[key]?.text = value * batch;
-    priceControllers[key]?.text =
-        (ingredientsMap[key]!.latestRate * value * batch).toStringAsFixed(2);
-  });
-}
+  num calculateRate(num packates) {
+    num totalCost = 0;
+    priceControllers.forEach((key, value) {
+      totalCost += num.parse(value.text);
+    });
+    return double.parse((totalCost / packates).toStringAsFixed(2));
+  }
 
-Future<dynamic> addNewIngredient(String name, String unit) async {
-  return await ingredientCollectionRef.doc(name).set({
-    "unit": unit,
-    "quantity": 0,
-    "averageRate": 0.00,
-    "latestRate": 0.00,
-  });
+  Future<void> deductIngredients() async {
+    quantityControllers.forEach((key, value) async {
+      await ingredientCollectionRef.doc(key).update(
+          {'quantity': FieldValue.increment(int.parse(value.text) * -1)});
+    });
+  }
+
+  Future<dynamic> addNewIngredient(String name, String unit) async {
+    return await ingredientCollectionRef.doc(name).set({
+      "unit": unit,
+      "quantity": 0,
+      "averageRate": 0.00,
+      "latestRate": 0.00,
+    });
+  }
 }
