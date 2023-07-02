@@ -1,25 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 final db = FirebaseFirestore.instance;
-// final ingredientCollectionRef = db.collection('raw-materials');
-final ingredientCollectionRef = db.collection('raw-materials');
+// final ingredientCollectionRef = db.collection('Ingredients');
+final ingredientCollectionRef = db.collection('Ingredients');
 
 class Ingredient {
-  Ingredient(this.name, this.subUnit, this.quantity, this.rate);
-
+  Ingredient(this.name, this.unit, this.quantity, this.averageRate , this.latestRate  );
   final String name;
-  final String subUnit;
+  final String unit;
   num quantity;
-  num rate;
+  num averageRate;
+  num latestRate;
 }
-
-// Future<List<Stream<DocumentSnapshot<Map<String, dynamic>>>>>
-//     getIngredientSnapshots() async {
-//   final querySnapshot = await ingredientCollectionRef.get();
-
-//   return ;
-// }
 
 Future<List<List<dynamic>>> fetchIngredientsData() async {
   final querySnapshot = await ingredientCollectionRef.get();
@@ -28,7 +22,7 @@ Future<List<List<dynamic>>> fetchIngredientsData() async {
     querySnapshot.docs
         .map(
           (doc) => Ingredient(
-              doc.id, doc['unit'], doc['quantity'], doc['pricePerUnit']),
+              doc.id , doc['unit'], doc['quantity'], doc['averageRate'] , doc['latestRate']),
         )
         .toList(),
     querySnapshot.docs
@@ -37,20 +31,20 @@ Future<List<List<dynamic>>> fetchIngredientsData() async {
   ];
 }
 
+Map<String, Ingredient> formatIngredientsData(List<Ingredient> ingredientList) {
+  Map<String, Ingredient> ingredientMap = {};
+  for (Ingredient i in ingredientList) {
+    ingredientMap[i.name] = i;
+  }
+  return ingredientMap;
+}
+
 Future<Ingredient> fetchAIngredientData(String ingredientName) async {
   final documentSnapshot =
       await ingredientCollectionRef.doc(ingredientName).get();
-  return Ingredient(documentSnapshot.id, documentSnapshot.data()?['subUnit'],
-      documentSnapshot.data()?['quantity'], documentSnapshot.data()?['rate']);
+  return Ingredient(documentSnapshot.id, documentSnapshot.data()?['unit'],
+      documentSnapshot.data()?['quantity'], documentSnapshot.data()?['avarageRate'] , documentSnapshot.data()?['latestRate']);
 }
-
-// Future<dynamic> updateIngredients(
-//     String goodsName, num newQuantity, num? price) async {
-//   return await db
-//       .collection('stock')
-//       .doc(goodsName)
-//       .update({'quantity': newQuantity, if (price != null) 'price': price});
-// }
 
 class PurchaseHistory {
   final String name;
@@ -110,7 +104,7 @@ Future<void> addPurchaseRecord(
     "name": ingredient.name,
     "previousQuantity": ingredient.quantity,
     "addedQuantity": addedQuantity,
-    "pricePerUnit": rate,
+    "rate": rate,
   });
 }
 
@@ -120,12 +114,108 @@ Future<void> updateIngredientDetails(
   num totalPrice,
   num averageRate,
 ) async {
-  num newRate = double.parse((totalPrice / addedQuantity).toStringAsFixed(2));
+  num latestRate = double.parse((totalPrice / addedQuantity).toStringAsFixed(2));
 
   await ingredientCollectionRef.doc(ingredient.name).update({
     'quantity': FieldValue.increment(addedQuantity),
-    'pricePerUnit': averageRate,
+    'averageRate': averageRate,
+    'latestRate': latestRate
   });
 
-  await addPurchaseRecord(ingredient, addedQuantity, newRate);
+  await addPurchaseRecord(ingredient, addedQuantity, latestRate);
 }
+
+class Product {
+  final String key;
+  final String name;
+  final num quantity;
+  final num rate;
+  final Map<String, dynamic> requirements;
+  const Product(
+      this.key, this.name, this.quantity, this.rate, this.requirements);
+  static Map<String, dynamic> formatRequirements(
+      Map<String, dynamic> requirements) {
+    Map<String, dynamic> formattedRequirements = {
+      "ingredients": {},
+      "others": []
+    };
+    requirements.forEach((key, value) {
+      if (value == null) {
+        formattedRequirements["others"].add(key);
+      } else {
+        formattedRequirements["ingredients"][key] = value;
+      }
+    });
+    return formattedRequirements;
+  }
+}
+
+class Department {
+  final String name;
+  final List<Product> products;
+  const Department(this.name, this.products);
+
+  static List<Product> getProductList(Map<String, dynamic> data) {
+    List<Product> products = [];
+    data.forEach((key, value) {
+      products.add(Product(key, value.name, value.quantity, value.rate,
+          Product.formatRequirements(value.requirements)));
+    });
+    return products;
+  }
+}
+
+Future<List<dynamic>> fetchDepartmentData(String departmentName) async {
+  final querySnapshot = await db.collection('departments').get();
+
+  return [
+    querySnapshot.docs
+        .map(
+          (department) => Department(
+              department.id, Department.getProductList(department.data())),
+        )
+        .toList(),
+    querySnapshot.docs
+        .map((doc) => ingredientCollectionRef.doc(doc.id).snapshots())
+        .toList(),
+  ];
+}
+
+
+
+bool isValidValue(num v){
+  if ((v != null && double.parse("$v") > 0 )){
+    return true;
+  }else{
+    return false;
+  }
+}
+
+Future<void> calculateRequirementsAndPrice(
+    Map<String, dynamic> ingredientRequirements, num batch) async {
+  Map<String,Ingredient> ingredientsMap = formatIngredientsData((await fetchIngredientsData()).cast<Ingredient>());
+  Map<String, TextEditingController> quantityControllers = {
+    'Maida': TextEditingController()
+  };
+  Map<String, TextEditingController> priceControllers = {
+    'Maida': TextEditingController()
+  };
+
+  ingredientRequirements.forEach((key, value) {
+    quantityControllers[key]?.text = value * batch;
+    priceControllers[key]?.text = (ingredientsMap[key]!.latestRate * value * batch).toStringAsFixed(2);
+  });
+}
+
+Future<dynamic> addNewIngredient(String name,String unit) async {
+  return await ingredientCollectionRef.doc(name).set(
+    {
+      "unit": unit,
+      "quantity": 0,
+      "averageRate" : 0.00,
+      "latestRate" : 0.00,
+    }
+  );
+}
+
+

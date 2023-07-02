@@ -1,7 +1,7 @@
 // import 'package:cloud_firestore/cloud_firestore.dart';
 
 // final db = FirebaseFirestore.instance;
-// final ingredientCollectionRef = db.collection('raw-materials');
+// final ingredientCollectionRef = db.collection('Ingredients');
 
 // Future<dynamic> addIngredientStock(String ingredientName, num previousQuantity,
 //     num addedQuantity, num previousRate, num totalPrice) async {
