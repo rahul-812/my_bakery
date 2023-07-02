@@ -109,7 +109,7 @@ class StockList extends StatelessWidget {
 }
 
 class GoodsTile extends StatelessWidget {
-  GoodsTile({
+  const GoodsTile({
     super.key,
     required this.ingredient,
     required this.stream,
@@ -163,22 +163,46 @@ class GoodsTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            'Avg',
+            'Rate :',
             style: textTheme.bodyMedium,
           ),
-          const SizedBox(width: 10.0),
+          const SizedBox(width: 5.0),
           const Text(
             '₹',
-            style: TextStyle(color: LightColors.main, fontSize: 16.0),
+            style: TextStyle(color: LightColors.main, fontSize: 15.0 , ),
+          ),
+          StreamBuilder(
+            stream: stream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final latestRate = (snapshot.data! as DocumentSnapshot<
+                    Map<String, dynamic>>)['latestRate'] as num;
+                return Text(
+                  '$latestRate/${ingredient.unit}',
+                  style: textTheme.bodyMedium,
+                );
+              }
+              return const SizedBox();
+            },
+          ),
+          const SizedBox(width: 10.0),
+          Text(
+            'Avg :',
+            style: textTheme.bodyMedium,
+          ),
+          const SizedBox(width: 5.0),
+          const Text(
+            '₹',
+            style: TextStyle(color: LightColors.main, fontSize: 15.0 , ),
           ),
           StreamBuilder(
             stream: stream,
             builder: (context, snapshot) {
               if (snapshot.hasData) {
                 final avgRate = (snapshot.data! as DocumentSnapshot<
-                    Map<String, dynamic>>)['pricePerUnit'] as num;
+                    Map<String, dynamic>>)['averageRate'] as num;
                 return Text(
-                  '$avgRate/${ingredient.subUnit}',
+                  '$avgRate/${ingredient.unit}',
                   style: textTheme.bodyMedium,
                 );
               }
@@ -211,7 +235,7 @@ class GoodsTile extends StatelessWidget {
                       ),
                       const SizedBox(width: 4.0),
                       Text(
-                        ingredient.subUnit,
+                        ingredient.unit,
                         style: textTheme.bodyMedium?.copyWith(
                           color: LightColors.main,
                           fontWeight: FontWeight.w500,
@@ -272,9 +296,9 @@ class EditStockDialog extends StatelessWidget {
                     return null;
                   },
                   controller: quantityController,
-                  label: 'Incoming Quantity',
+                  label: 'Purchased Quantity',
                   suffix: Text(
-                    ingredient.subUnit,
+                    ingredient.unit,
                     style: extremeTextStyle,
                   ),
                 ),
@@ -290,10 +314,6 @@ class EditStockDialog extends StatelessWidget {
                   label: 'Total Price',
                   prefix: const Text(
                     '₹',
-                    style: extremeTextStyle,
-                  ),
-                  suffix: Text(
-                    '(per ${ingredient.subUnit})',
                     style: extremeTextStyle,
                   ),
                 ),
@@ -323,7 +343,7 @@ class EditStockDialog extends StatelessWidget {
             final addedQuantity = num.parse(quantityController.text);
 
             num averageRate = double.parse(
-              (((ingredient.rate * ingredient.quantity) + totalPrice) /
+              (((ingredient.averageRate * ingredient.quantity) + totalPrice) /
                       (ingredient.quantity + addedQuantity))
                   .toStringAsFixed(2),
             );
@@ -337,7 +357,8 @@ class EditStockDialog extends StatelessWidget {
               averageRate,
             ).then((_) {
               ingredient.quantity += addedQuantity;
-              ingredient.rate = averageRate;
+              ingredient.averageRate = averageRate;
+              ingredient.latestRate = double.parse((totalPrice/addedQuantity).toStringAsFixed(2));
             });
 
             // quantityKey.currentState!.updateUi();
