@@ -8,19 +8,6 @@ import 'ui/department.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-//    List<Map<String,String>> ingredientList = [
-//   {"name":"Maida","unit":"KG"},
-//   {"name":"Butter","unit":"KG"},
-//   {"name":"Salt","unit":"KG"},
-//   {"name":"Egg","unit":"Pcs"},
-//   {"name":"Rasui Dalda","unit":"KG"},
-//   {"name":"Margarin Dalda","unit":"KG"},
-//   {"name":"Oil","unit":"L"},
-//   {"name":"Sugar","unit":"KG"}
-// ];
-// for(Map<String,String> i in ingredientList){
-//   await addNewIngredient(i['name']!,i['unit']!);
-// }
   runApp(const MyApp());
 }
 
