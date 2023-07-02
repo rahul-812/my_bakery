@@ -69,8 +69,8 @@ class PurchaseHistory {
       DateFormat('MMM dd, yyyy').format((map['date'] as Timestamp).toDate()),
       map['previousQuantity'],
       map['addedQuantity'],
-      map['pricePerUnit'],
-      map['addedQuantity'] * map['pricePerUnit'],
+      map['rate'],
+      map['addedQuantity'] * map['rate'],
     );
   }
 }
