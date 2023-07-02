@@ -17,11 +17,15 @@ class CustomTheme {
       ),
       textTheme: const TextTheme(
         bodyLarge: TextStyle(
-          color: LightColors.textColor,
+          color: LightColors.text,
           fontWeight: FontWeight.w500,
+          letterSpacing: 0.0,
         ),
-        bodyMedium: TextStyle(color: LightColors.textMediumColor),
-        bodySmall: TextStyle(color: LightColors.lightTextColor),
+        bodyMedium: TextStyle(
+          color: LightColors.textMedium,
+          letterSpacing: 0.0,
+        ),
+        bodySmall: TextStyle(color: LightColors.lightText),
       ),
       iconTheme: const IconThemeData(color: LightColors.main),
       inputDecorationTheme: InputDecorationTheme(
@@ -45,19 +49,15 @@ class CustomTheme {
       tabBarTheme: TabBarTheme(
         splashFactory: InkRipple.splashFactory,
         // labelColor: const Color(0xffbe500f),
-        labelColor: Colors.white,
-        unselectedLabelColor: LightColors.lightTextColor,
+        labelColor: LightColors.text,
+        unselectedLabelColor: LightColors.lightText,
         indicatorSize: TabBarIndicatorSize.tab,
-        labelPadding: const EdgeInsets.symmetric(
-          horizontal: 12.0,
-          // vertical: 5.0,
-        ),
+        labelPadding: const EdgeInsets.symmetric(horizontal: 12.0),
         indicator: BoxDecoration(
-          color: const Color(0xFF4C515E),
+          color: LightColors.greyCard,
           borderRadius: BorderRadius.circular(8.0),
         ),
       ),
-      // bottomSheetTheme: const BottomSheetThemeData(elevation: 0.0),
     );
   }
 }

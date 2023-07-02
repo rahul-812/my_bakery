@@ -162,39 +162,40 @@ class GoodsTile extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
-          Text(
-            'Rate :',
-            style: textTheme.bodyMedium,
-          ),
+          Text('Rate :', style: textTheme.bodyMedium),
           const SizedBox(width: 5.0),
           const Text(
             '₹',
-            style: TextStyle(color: LightColors.main, fontSize: 15.0 , ),
+            style: TextStyle(color: LightColors.main, fontSize: 15.0),
           ),
-          StreamBuilder(
-            stream: stream,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                final latestRate = (snapshot.data! as DocumentSnapshot<
-                    Map<String, dynamic>>)['latestRate'] as num;
-                return Text(
-                  '$latestRate/${ingredient.unit}',
-                  style: textTheme.bodyMedium,
-                );
-              }
-              return const SizedBox();
-            },
-          ),
-          const SizedBox(width: 10.0),
-          Text(
-            'Avg :',
-            style: textTheme.bodyMedium,
-          ),
-          const SizedBox(width: 5.0),
-          const Text(
-            '₹',
-            style: TextStyle(color: LightColors.main, fontSize: 15.0 , ),
-          ),
+          // StreamBuilder(
+          //   stream: stream,
+          //   builder: (context, snapshot) {
+          //     if (snapshot.hasData) {
+          //       final latestRate = (snapshot.data!
+          //               as DocumentSnapshot<Map<String, dynamic>>)['latestRate']
+          //           as num;
+          //       return Text(
+          //         '$latestRate/${ingredient.unit}',
+          //         style: textTheme.bodyMedium,
+          //       );
+          //     }
+          //     return const SizedBox();
+          //   },
+          // ),
+          // const SizedBox(width: 10.0),
+          // Text(
+          //   'Avg :',
+          //   style: textTheme.bodyMedium,
+          // ),
+          // const SizedBox(width: 5.0),
+          // const Text(
+          //   '₹',
+          //   style: TextStyle(
+          //     color: LightColors.main,
+          //     fontSize: 15.0,
+          //   ),
+          // ),
           StreamBuilder(
             stream: stream,
             builder: (context, snapshot) {
@@ -221,7 +222,7 @@ class GoodsTile extends StatelessWidget {
             return quantity == 0
                 ? const Icon(
                     Icons.warning_rounded,
-                    color: LightColors.warningColor,
+                    color: LightColors.warning,
                     size: 30.0,
                   )
                 : Row(
@@ -274,7 +275,7 @@ class EditStockDialog extends StatelessWidget {
       title: Text(
         ingredient.name,
         textAlign: TextAlign.center,
-        style: textTheme.titleLarge?.copyWith(color: LightColors.textColor),
+        style: textTheme.titleLarge?.copyWith(color: LightColors.text),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -358,7 +359,8 @@ class EditStockDialog extends StatelessWidget {
             ).then((_) {
               ingredient.quantity += addedQuantity;
               ingredient.averageRate = averageRate;
-              ingredient.latestRate = double.parse((totalPrice/addedQuantity).toStringAsFixed(2));
+              ingredient.latestRate =
+                  double.parse((totalPrice / addedQuantity).toStringAsFixed(2));
             });
 
             // quantityKey.currentState!.updateUi();

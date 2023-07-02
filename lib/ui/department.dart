@@ -2,50 +2,80 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_bakery/colors.dart';
 
+import '../backend/cloud_storage.dart';
 import 'my_widgets.dart';
 
-class DepartmentsPage extends StatelessWidget {
+class DepartmentsPage extends StatefulWidget {
   const DepartmentsPage({super.key});
+
+  @override
+  State<DepartmentsPage> createState() => _DepartmentsPageState();
+}
+
+class _DepartmentsPageState extends State<DepartmentsPage> {
+  late final Future<List<Department>> _futureDepartment;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureDepartment = fetchDepartmentData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<List<Department>>(
+      future: _futureDepartment,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return _DepertmentUi(departments: snapshot.data!);
+        }
+        if (snapshot.hasError) {
+          debugPrint(snapshot.error.toString());
+          return const Center(child: Icon(Icons.error));
+        }
+        return const Center(
+          child: RepaintBoundary(
+            child: CircularProgressIndicator(),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _DepertmentUi extends StatelessWidget {
+  const _DepertmentUi({required this.departments});
+
+  final List<Department> departments;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-
     return DefaultTabController(
-      length: 4,
+      length: 2,
       child: Column(
         // mainAxisSize: MainAxisSize.min,
         children: [
-          // const SizedBox(height: 20.0),
-          // SvgPicture.asset(
-          //   'images/cookie.svg',
-          //   width: 150.0,
-          //   height: 150.0,
-          //   // image: AssetImage('images/apple_pie.webp'),
-          // ),
-          // const Padding(
-          //   padding: EdgeInsets.symmetric(horizontal: 30.0, vertical: 15.0),
-          //   child: Text(
-          //     'Choose products under the depertments',
-          //     textAlign: TextAlign.center,
-          //   ),
-          // ),
-          // const SizedBox(height: 10.0),
-          const CustomCard(
-            height: 100.0,
-            margin: EdgeInsets.all(10.0),
-            child: Text('Check card'),
+          const SizedBox(height: 20.0),
+          SvgPicture.asset(
+            'images/candy.svg',
+            width: 150.0,
+            height: 150.0,
           ),
+          const SizedBox(height: 10.0),
+          // const CustomCard(
+          //   height: 100.0,
+          //   margin: EdgeInsets.all(10.0),
+          //   child: Text('Check card'),
+          // ),
           const CustomCard(
             margin: EdgeInsets.symmetric(horizontal: 10.0),
             child: TabBar(
               isScrollable: true,
               padding: EdgeInsets.symmetric(vertical: 6.0),
               tabs: [
-                CustomTab(label: 'Bread', image: 'images/bread.svg'),
-                CustomTab(label: 'Hand Biscuit', image: 'images/cookie.svg'),
-                CustomTab(label: 'Cake', image: 'images/cake.svg'),
-                CustomTab(label: 'Sweet', image: 'images/candy.svg'),
+                CustomTab(label: 'Hand Biscuit', image: 'images/bread.svg'),
+                CustomTab(label: 'Machine Biscuit', image: 'images/cookie.svg'),
               ],
             ),
           ),
@@ -57,18 +87,12 @@ class DepartmentsPage extends StatelessWidget {
                 children: [
                   ProductList(
                     iconPath: 'images/bread.svg',
+                    products: departments[0].products,
                     theme: textTheme,
                   ),
                   ProductList(
                     iconPath: 'images/cookie.svg',
-                    theme: textTheme,
-                  ),
-                  ProductList(
-                    iconPath: 'images/cake.svg',
-                    theme: textTheme,
-                  ),
-                  ProductList(
-                    iconPath: 'images/candy.svg',
+                    products: departments[1].products,
                     theme: textTheme,
                   ),
                 ],
@@ -127,7 +151,7 @@ class CustomCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12.0),
         boxShadow: const [
           BoxShadow(
-            color: LightColors.shadowColor,
+            color: LightColors.shadow,
             blurRadius: 3,
             offset: Offset(0, 1),
             spreadRadius: -1,
@@ -143,80 +167,68 @@ class ProductList extends StatelessWidget {
   const ProductList({
     super.key,
     required this.iconPath,
+    required this.products,
     required this.theme,
   });
 
   final String iconPath;
   final TextTheme theme;
+  final List<Product> products;
 
   @override
   Widget build(BuildContext context) {
     return ListView.separated(
-      itemCount: 12,
-      // padding: const EdgeInsets.all(12.0),
+      itemCount: products.length,
       separatorBuilder: (_, __) => const Divider(),
-      itemBuilder: (_, index) => ListTile(
-        onTap: () {
-          showModalBottomSheet(
-            context: context,
-            builder: (_) => const ProductBottomSheet(),
-          );
-        },
-        leading: SvgPicture.asset(
-          iconPath,
-          excludeFromSemantics: true,
-        ),
-        title: Text(
-          'Pastry Cake',
-          style: theme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        subtitle: Text(
-          'Rate  ₹120',
-          style: theme.bodySmall?.copyWith(
-            fontSize: 14.0,
-          ),
-        ),
-        trailing: Column(
-          children: [
-            const Text(
-              '40',
-              style: TextStyle(
-                fontSize: 22.0,
-                fontWeight: FontWeight.w500,
-                color: LightColors.main,
+      itemBuilder: (_, index) {
+        final product = products[index];
+        return ListTile(
+          onTap: () {
+            showModalBottomSheet(
+              elevation: 0.0,
+              isScrollControlled: true,
+              context: context,
+              builder: (_) => MakeProductSheet(
+                product: product,
               ),
+            );
+          },
+          leading: SvgPicture.asset(
+            iconPath,
+            excludeFromSemantics: true,
+          ),
+          title: Text(
+            product.name,
+            style: theme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w500,
             ),
-            Text(
-              'packet',
-              style: theme.bodySmall?.copyWith(
-                fontSize: 12.0,
+          ),
+          subtitle: Text(
+            'Rate : ₹${product.rate}',
+            style: theme.bodySmall?.copyWith(
+              fontSize: 14.0,
+            ),
+          ),
+          trailing: Column(
+            children: [
+              Text(
+                '${product.quantity}',
+                style: const TextStyle(
+                  fontSize: 22.0,
+                  fontWeight: FontWeight.w500,
+                  color: LightColors.main,
+                ),
               ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class ProductBottomSheet extends StatelessWidget {
-  const ProductBottomSheet({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(40.0),
-      child: Column(
-        children: [
-          Text("Today's Batch", style: Theme.of(context).textTheme.bodyLarge),
-          const SizedBox(height: 20.0),
-          const MyTextField(label: 'Batches'),
-          const SizedBox(height: 20.0),
-          const MyTextField(label: 'Packets'),
-        ],
-      ),
+              Text(
+                'Batch',
+                style: theme.bodySmall?.copyWith(
+                  fontSize: 12.0,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
