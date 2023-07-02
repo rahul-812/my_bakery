@@ -86,9 +86,15 @@ class MakeProductSheet extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 35.0),
-          Text(
-            "Today's production",
-            style: textTheme.bodyLarge?.copyWith(fontSize: 13.0),
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: padding,
+              vertical: 11.0,
+            ),
+            child: Text(
+              "Today's production",
+              style: textTheme.bodyLarge?.copyWith(fontSize: 13.0),
+            ),
           ),
           Padding(
             padding: EdgeInsets.symmetric(horizontal: padding),
