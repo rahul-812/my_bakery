@@ -2,14 +2,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:my_bakery/colors.dart';
+import 'package:my_bakery/ui/my_widgets.dart';
 import 'ui/purchase_history.dart';
 import 'ui/current_stock.dart';
 import 'theme.dart';
 import 'ui/department.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  // WidgetsFlutterBinding.ensureInitialized();
+  // await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -22,7 +23,22 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: CustomTheme.light,
-      home: const UiPageHolder(),
+      home: Scaffold(
+        body: Center(
+          child: Builder(builder: (context) {
+            return TextButton(
+              onPressed: () {
+                showModalBottomSheet(
+                  elevation: 0.0,
+                  context: context,
+                  builder: (_) => const MakeProductSheet(),
+                );
+              },
+              child: const Text('Open'),
+            );
+          }),
+        ),
+      ),
     );
   }
 }
@@ -63,7 +79,7 @@ class _UiPageHolderState extends State<UiPageHolder> {
         actions: const [
           Icon(
             Icons.cake,
-            color: LightColors.secondary,
+            color: LightColors.main,
           ),
           SizedBox(width: 30.0),
         ],

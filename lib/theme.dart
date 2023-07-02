@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'colors.dart';
 
 class CustomTheme {
@@ -22,16 +23,24 @@ class CustomTheme {
         bodyMedium: TextStyle(color: LightColors.textMediumColor),
         bodySmall: TextStyle(color: LightColors.lightTextColor),
       ),
-      inputDecorationTheme: const InputDecorationTheme(
+      iconTheme: const IconThemeData(color: LightColors.main),
+      inputDecorationTheme: InputDecorationTheme(
         isDense: true,
-        border: OutlineInputBorder(),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6.0),
+          borderSide: const BorderSide(color: Color(0xffc0c3cb)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(6.0),
+          borderSide: const BorderSide(color: LightColors.main),
+        ),
       ),
       dividerTheme: const DividerThemeData(
         color: Color(0xffedeef1),
       ),
       dialogTheme: const DialogTheme(elevation: 0.0),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        selectedItemColor: LightColors.secondary,
+        selectedItemColor: LightColors.main,
       ),
       tabBarTheme: TabBarTheme(
         splashFactory: InkRipple.splashFactory,
@@ -48,6 +57,7 @@ class CustomTheme {
           borderRadius: BorderRadius.circular(8.0),
         ),
       ),
+      // bottomSheetTheme: const BottomSheetThemeData(elevation: 0.0),
     );
   }
 }

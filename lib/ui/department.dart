@@ -185,7 +185,7 @@ class ProductList extends StatelessWidget {
               style: TextStyle(
                 fontSize: 22.0,
                 fontWeight: FontWeight.w500,
-                color: LightColors.secondary,
+                color: LightColors.main,
               ),
             ),
             Text(
