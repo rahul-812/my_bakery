@@ -14,7 +14,7 @@ class DepartmentsPage extends StatefulWidget {
 }
 
 class _DepartmentsPageState extends State<DepartmentsPage> {
-  late final Future<List<Department>> _futureDepartment;
+  late final Future<Iterable<Department>> _futureDepartment;
 
   @override
   void initState() {
@@ -24,7 +24,7 @@ class _DepartmentsPageState extends State<DepartmentsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Department>>(
+    return FutureBuilder<Iterable<Department>>(
       future: _futureDepartment,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
@@ -47,7 +47,7 @@ class _DepartmentsPageState extends State<DepartmentsPage> {
 class _DepertmentUi extends StatelessWidget {
   const _DepertmentUi({required this.departments});
 
-  final List<Department> departments;
+  final Iterable<Department> departments;
 
   @override
   Widget build(BuildContext context) {
@@ -64,11 +64,6 @@ class _DepertmentUi extends StatelessWidget {
             height: 150.0,
           ),
           const SizedBox(height: 10.0),
-          // const CustomCard(
-          //   height: 100.0,
-          //   margin: EdgeInsets.all(10.0),
-          //   child: Text('Check card'),
-          // ),
           const CustomCard(
             margin: EdgeInsets.symmetric(horizontal: 10.0),
             child: TabBar(
@@ -88,12 +83,12 @@ class _DepertmentUi extends StatelessWidget {
                 children: [
                   ProductList(
                     iconPath: 'images/bread.svg',
-                    products: departments[0].products,
+                    products: departments.elementAt(0).products,
                     theme: textTheme,
                   ),
                   ProductList(
                     iconPath: 'images/cookie.svg',
-                    products: departments[1].products,
+                    products: departments.elementAt(1).products,
                     theme: textTheme,
                   ),
                 ],
@@ -174,7 +169,7 @@ class ProductList extends StatelessWidget {
 
   final String iconPath;
   final TextTheme theme;
-  final List<Product> products;
+  final Iterable<Product> products;
 
   @override
   Widget build(BuildContext context) {
@@ -182,7 +177,7 @@ class ProductList extends StatelessWidget {
       itemCount: products.length,
       separatorBuilder: (_, __) => const Divider(),
       itemBuilder: (_, index) {
-        final product = products[index];
+        final product = products.elementAt(index);
         return ListTile(
           onTap: () {
             Navigator.of(context)

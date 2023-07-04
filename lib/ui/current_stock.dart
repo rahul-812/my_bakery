@@ -7,46 +7,27 @@ import 'package:my_bakery/backend/cloud_storage.dart';
 import '../colors.dart';
 import 'my_widgets.dart';
 
-class CurrentStockPage extends StatelessWidget {
-  CurrentStockPage({Key? key}) : super(key: key);
-  final stock = fetchIngredientsData();
+class CurrentStockPage extends StatefulWidget {
+  const CurrentStockPage({Key? key}) : super(key: key);
+
+  @override
+  State<CurrentStockPage> createState() => _CurrentStockPageState();
+}
+
+class _CurrentStockPageState extends State<CurrentStockPage> {
+  late final Future<Iterable<Ingredient>> _futureStock;
+
+  @override
+  void initState() {
+    super.initState();
+    _futureStock = fetchIngredientsData();
+  }
 
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(
         children: [
-          // Padding(
-          //   padding: const EdgeInsets.all(padding),
-          //   child: Row(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: const [
-          // Expanded(
-          //   child: SubmitBox(
-          //     total: 22,
-          //     desc: 'Items Stored In Good Quantity',
-          //     background: LightColors.main,
-          //     color: Colors.white,
-          //   ),
-          // ),
-          // SizedBox(width: 14.0),
-          // Expanded(
-          //   child: SubmitBox(
-          //     total: 3,
-          //     desc: 'Items Finished Or Almost Finished',
-          //     background: LightColors.red,
-          //     color: Colors.white,
-          //   ),
-          // ),
-          //   ],
-          // ),
-          // ),
-          // const Image(
-          //   width: 160.0,
-          //   height: 160.0,
-          //   image: AssetImage('images/cake.webp'),
-          // ),
-          // const SizedBox(height: 20.0),
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 18.0, vertical: 18.0),
@@ -62,8 +43,8 @@ class CurrentStockPage extends StatelessWidget {
               ],
             ),
           ),
-          FutureBuilder<List<dynamic>>(
-            future: stock,
+          FutureBuilder<Iterable<dynamic>>(
+            future: _futureStock,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
                 return const Icon(Icons.error, color: Colors.red);
@@ -84,14 +65,14 @@ class CurrentStockPage extends StatelessWidget {
 class StockList extends StatelessWidget {
   const StockList({super.key, required this.list});
 
-  final List<dynamic> list;
+  final Iterable<dynamic> list;
 
   @override
   Widget build(BuildContext context) {
     final accentColors = AccentColors();
 
-    final ingredientList = list[0] as List<Ingredient>;
-    final snapshots = list[1] as List<Stream>;
+    final ingredientList = list.elementAt(0) as Iterable<Ingredient>;
+    final snapshots = list.elementAt(1) as Iterable<Stream>;
 
     return ListView.separated(
       shrinkWrap: true,
@@ -99,8 +80,8 @@ class StockList extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
       itemCount: ingredientList.length,
       itemBuilder: (context, index) => GoodsTile(
-        ingredient: ingredientList[index],
-        stream: snapshots[index],
+        ingredient: ingredientList.elementAt(index),
+        stream: snapshots.elementAt(index),
         avatarColor: accentColors.next,
       ),
       separatorBuilder: (context, index) => const SizedBox(height: 5.0),
@@ -357,10 +338,10 @@ class EditStockDialog extends StatelessWidget {
               totalPrice,
               averageRate,
             ).then((_) {
-              ingredient.quantity += addedQuantity;
-              ingredient.averageRate = averageRate;
-              ingredient.latestRate =
-                  double.parse((totalPrice / addedQuantity).toStringAsFixed(2));
+              // ingredient.quantity += addedQuantity;
+              // ingredient.averageRate = averageRate;
+              // ingredient.latestRate =
+              //     double.parse((totalPrice / addedQuantity).toStringAsFixed(2));
             });
 
             // quantityKey.currentState!.updateUi();

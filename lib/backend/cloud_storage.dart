@@ -2,52 +2,62 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../model/ingredient_model.dart';
+
 final db = FirebaseFirestore.instance;
 final ingredientCollectionRef = db.collection('Ingredients');
 
-class Ingredient {
+class Ingredient with ChangeNotifier {
   Ingredient(
-      this.name, this.unit, this.quantity, this.averageRate, this.latestRate);
+    this.name,
+    this.unit,
+    this.quantity,
+    double averageRate,
+    double latestRate,
+  )   : _averageRate = averageRate,
+        _latestRate = latestRate;
+
   final String name;
   final String unit;
-  num quantity;
-  num averageRate;
-  num latestRate;
+  double quantity;
+  double _averageRate;
+  double _latestRate;
+
+  get averageRate => null;
 }
 
-Future<List<List<dynamic>>> fetchIngredientsData() async {
+Future<Iterable<Ingredient>> fetchIngredientsData() async {
   final querySnapshot = await ingredientCollectionRef.get();
 
-  return [
-    querySnapshot.docs
-        .map(
-          (doc) => Ingredient(doc.id, doc['unit'], doc['quantity'],
-              doc['averageRate'], doc['latestRate']),
-        )
-        .toList(),
-    querySnapshot.docs
-        .map((doc) => ingredientCollectionRef.doc(doc.id).snapshots())
-        .toList(),
-  ];
+  return querySnapshot.docs.map<Ingredient>(
+    (doc) => Ingredient(
+      doc.id,
+      doc['unit'],
+      doc['quantity'],
+      doc['averageRate'],
+      doc['latestRate'],
+    ),
+  );
 }
 
-Map<String, Ingredient> formatIngredientsData(List<Ingredient> ingredientList) {
-  Map<String, Ingredient> ingredientMap = {};
-  for (Ingredient i in ingredientList) {
-    ingredientMap[i.name] = i;
-  }
-  return ingredientMap;
-}
+// Map<String, Ingredient> formatIngredientsData(List<Ingredient> ingredientList) {
+//   Map<String, Ingredient> ingredientMap = {};
+//   for (Ingredient i in ingredientList) {
+//     ingredientMap[i.name] = i;
+//   }
+//   return ingredientMap;
+// }
 
 Future<Ingredient> fetchAIngredientData(String ingredientName) async {
   final documentSnapshot =
       await ingredientCollectionRef.doc(ingredientName).get();
   return Ingredient(
-      documentSnapshot.id,
-      documentSnapshot.data()?['unit'],
-      documentSnapshot.data()?['quantity'],
-      documentSnapshot.data()?['avarageRate'],
-      documentSnapshot.data()?['latestRate']);
+    documentSnapshot.id,
+    documentSnapshot['unit'],
+    documentSnapshot['quantity'],
+    documentSnapshot['avarageRate'],
+    documentSnapshot['latestRate'],
+  );
 }
 
 class PurchaseHistory {
@@ -79,7 +89,7 @@ class PurchaseHistory {
   }
 }
 
-Future<List<PurchaseHistory>> fetchPurchaseRecords(
+Future<Iterable<PurchaseHistory>> fetchPurchaseRecords(
   DateTime startDate,
   DateTime endDate,
 ) async {
@@ -90,11 +100,9 @@ Future<List<PurchaseHistory>> fetchPurchaseRecords(
       .orderBy('date', descending: true)
       .get();
 
-  return querySnapshot.docs
-      .map((document) => PurchaseHistory.fromMap(
-            document.data(),
-          ))
-      .toList();
+  return querySnapshot.docs.map((document) => PurchaseHistory.fromMap(
+        document.data(),
+      ));
 }
 
 Future<void> addPurchaseRecord(
@@ -164,24 +172,12 @@ class Product {
 
 class Department {
   final String name;
-  final List<Product> products;
+  final Iterable<Product> products;
 
   const Department(this.name, this.products);
 
-  static List<Product> makeProductList(Map<String, dynamic> data) {
-    // final l = <Product>[];
-    // data.forEach((key, value) {
-    //   l.add(Product(
-    //     key,
-    //     value['name'],
-    //     value['quantity'],
-    //     value['rate'],
-    //     value['requirement'],
-    //   ));
-    // });
-    // return l;
+  static Iterable<Product> makeProductList(Map<String, dynamic> data) {
     return data.entries.map((e) {
-      debugPrint('${e.key}');
       return Product(
         e.key,
         e.value['name'],
@@ -189,35 +185,17 @@ class Department {
         e.value['rate'],
         e.value['requirement'],
       );
-    }).toList();
+    });
   }
 }
 
-Future<List<Department>> fetchDepartmentData() async {
+Future<Iterable<Department>> fetchDepartmentData() async {
   final querySnapshot = await db.collection('departments').get();
 
-  return querySnapshot.docs
-      .map(
-        (department) => Department(
-          department.id,
-          Department.makeProductList(department.data()),
-        ),
-      )
-      .toList();
-
-  // return [
-  //   querySnapshot.docs
-  //       .map(
-  //         (department) => Department(
-  //           department.id,
-  //           Department.makeProductList(department.data()),
-  //         ),
-  //       )
-  //       .toList(),
-  //   querySnapshot.docs
-  //       .map((doc) => ingredientCollectionRef.doc(doc.id).snapshots())
-  //       .toList(),
-  // ];
+  return querySnapshot.docs.map((department) => Department(
+        department.id,
+        Department.makeProductList(department.data()),
+      ));
 }
 
 bool isValidValue(num v) {
@@ -228,53 +206,53 @@ bool isValidValue(num v) {
   }
 }
 
-Future<void> calculateRequirementsAndPrice(
-    Map<String, dynamic> ingredientRequirements, num batch) async {
-  Map<String, Ingredient> ingredientsMap =
-      formatIngredientsData((await fetchIngredientsData()).cast<Ingredient>());
-  Map<String, TextEditingController> quantityControllers = {
-    'Maida': TextEditingController()
-  };
-  Map<String, TextEditingController> priceControllers = {
-    'Maida': TextEditingController()
-  };
-  Future<void> calculateRequirementsAndPrice(
-      Map<String, dynamic> ingredientRequirements, num batch) async {
-    Map<String, Ingredient> ingredientsMap = formatIngredientsData(
-        (await fetchIngredientsData()).cast<Ingredient>());
-    ingredientRequirements.forEach((key, value) {
-      if (ingredientsMap[key]!.quantity >= value * batch) {
-        quantityControllers[key]?.text = value * batch;
-        priceControllers[key]?.text =
-            (ingredientsMap[key]!.latestRate * value * batch)
-                .toStringAsFixed(2);
-      } else {
-        //showWarning(insufficient '$key');
-      }
-    });
-  }
+// Future<void> calculateRequirementsAndPrice(
+//     Map<String, dynamic> ingredientRequirements, num batch) async {
+//   Map<String, Ingredient> ingredientsMap =
+//       formatIngredientsData((await fetchIngredientsData()).cast<Ingredient>());
+//   Map<String, TextEditingController> quantityControllers = {
+//     'Maida': TextEditingController()
+//   };
+//   Map<String, TextEditingController> priceControllers = {
+//     'Maida': TextEditingController()
+//   };
+//   Future<void> calculateRequirementsAndPrice(
+//       Map<String, dynamic> ingredientRequirements, num batch) async {
+//     Map<String, Ingredient> ingredientsMap = formatIngredientsData(
+//         (await fetchIngredientsData()).cast<Ingredient>());
+//     ingredientRequirements.forEach((key, value) {
+//       if (ingredientsMap[key]!.quantity >= value * batch) {
+//         quantityControllers[key]?.text = value * batch;
+//         priceControllers[key]?.text =
+//             (ingredientsMap[key]!.latestRate * value * batch)
+//                 .toStringAsFixed(2);
+//       } else {
+//         //showWarning(insufficient '$key');
+//       }
+//     });
+//   }
 
-  num calculateRate(num packates) {
-    num totalCost = 0;
-    priceControllers.forEach((key, value) {
-      totalCost += num.parse(value.text);
-    });
-    return double.parse((totalCost / packates).toStringAsFixed(2));
-  }
+//   num calculateRate(num packates) {
+//     num totalCost = 0;
+//     priceControllers.forEach((key, value) {
+//       totalCost += num.parse(value.text);
+//     });
+//     return double.parse((totalCost / packates).toStringAsFixed(2));
+//   }
 
-  Future<void> deductIngredients() async {
-    quantityControllers.forEach((key, value) async {
-      await ingredientCollectionRef.doc(key).update(
-          {'quantity': FieldValue.increment(int.parse(value.text) * -1)});
-    });
-  }
+//   Future<void> deductIngredients() async {
+//     quantityControllers.forEach((key, value) async {
+//       await ingredientCollectionRef.doc(key).update(
+//           {'quantity': FieldValue.increment(int.parse(value.text) * -1)});
+//     });
+//   }
+// }
 
-  Future<dynamic> addNewIngredient(String name, String unit) async {
-    return await ingredientCollectionRef.doc(name).set({
-      "unit": unit,
-      "quantity": 0,
-      "averageRate": 0.00,
-      "latestRate": 0.00,
-    });
-  }
+Future<dynamic> addNewIngredient(String name, String unit) async {
+  return await ingredientCollectionRef.doc(name).set({
+    "unit": unit,
+    "quantity": 0,
+    "averageRate": 0.00,
+    "latestRate": 0.00,
+  });
 }
