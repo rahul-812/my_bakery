@@ -1,57 +1,52 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:my_bakery/backend/cloud_storage.dart';
 
 // common type of the best quantity
 
 import '../colors.dart';
-import 'stock_widgets.dart';
+import 'my_widgets.dart';
 
 class CurrentStockPage extends StatelessWidget {
   CurrentStockPage({Key? key}) : super(key: key);
-  final Future<List<Ingredient>> stock = fetchIngredientsData();
+  final stock = fetchIngredientsData();
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('current stock built...');
-
-    stock.then((value) {}).onError((error, stackTrace) {
-      debugPrint(error.toString());
-    });
-
     return SingleChildScrollView(
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(padding),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                // Expanded(
-                //   child: SubmitBox(
-                //     total: 22,
-                //     desc: 'Items Stored In Good Quantity',
-                //     background: LightColors.main,
-                //     color: Colors.white,
-                //   ),
-                // ),
-                // SizedBox(width: 14.0),
-                // Expanded(
-                //   child: SubmitBox(
-                //     total: 3,
-                //     desc: 'Items Finished Or Almost Finished',
-                //     background: LightColors.red,
-                //     color: Colors.white,
-                //   ),
-                // ),
-              ],
-            ),
-          ),
-          const Image(
-            width: 160.0,
-            height: 160.0,
-            image: AssetImage('images/cake.webp'),
-          ),
-          const SizedBox(height: 20.0),
+          // Padding(
+          //   padding: const EdgeInsets.all(padding),
+          //   child: Row(
+          //     crossAxisAlignment: CrossAxisAlignment.start,
+          //     children: const [
+          // Expanded(
+          //   child: SubmitBox(
+          //     total: 22,
+          //     desc: 'Items Stored In Good Quantity',
+          //     background: LightColors.main,
+          //     color: Colors.white,
+          //   ),
+          // ),
+          // SizedBox(width: 14.0),
+          // Expanded(
+          //   child: SubmitBox(
+          //     total: 3,
+          //     desc: 'Items Finished Or Almost Finished',
+          //     background: LightColors.red,
+          //     color: Colors.white,
+          //   ),
+          // ),
+          //   ],
+          // ),
+          // ),
+          // const Image(
+          //   width: 160.0,
+          //   height: 160.0,
+          //   image: AssetImage('images/cake.webp'),
+          // ),
+          // const SizedBox(height: 20.0),
           Padding(
             padding:
                 const EdgeInsets.symmetric(horizontal: 18.0, vertical: 18.0),
@@ -67,7 +62,7 @@ class CurrentStockPage extends StatelessWidget {
               ],
             ),
           ),
-          FutureBuilder<List<Ingredient>>(
+          FutureBuilder<List<dynamic>>(
             future: stock,
             builder: (context, snapshot) {
               if (snapshot.hasError) {
@@ -89,19 +84,23 @@ class CurrentStockPage extends StatelessWidget {
 class StockList extends StatelessWidget {
   const StockList({super.key, required this.list});
 
-  final List<Ingredient> list;
+  final List<dynamic> list;
 
   @override
   Widget build(BuildContext context) {
     final accentColors = AccentColors();
 
+    final ingredientList = list[0] as List<Ingredient>;
+    final snapshots = list[1] as List<Stream>;
+
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      itemCount: list.length,
+      itemCount: ingredientList.length,
       itemBuilder: (context, index) => GoodsTile(
-        ingredient: list[index],
+        ingredient: ingredientList[index],
+        stream: snapshots[index],
         avatarColor: accentColors.next,
       ),
       separatorBuilder: (context, index) => const SizedBox(height: 5.0),
@@ -110,11 +109,16 @@ class StockList extends StatelessWidget {
 }
 
 class GoodsTile extends StatelessWidget {
-  GoodsTile({super.key, required this.ingredient, required this.avatarColor});
+  const GoodsTile({
+    super.key,
+    required this.ingredient,
+    required this.stream,
+    required this.avatarColor,
+  });
 
   final Ingredient ingredient;
   final Color avatarColor;
-  final ingredientKey = GlobalKey<IngredientMonitorState>();
+  final Stream stream;
 
   void _openEditDialog(BuildContext context) {
     showDialog(
@@ -122,7 +126,6 @@ class GoodsTile extends StatelessWidget {
       builder: (context) {
         return EditStockDialog(
           ingredient: ingredient,
-          quantityKey: ingredientKey,
         );
       },
     );
@@ -152,12 +155,98 @@ class GoodsTile extends StatelessWidget {
       ),
       title: Text(
         ingredient.name,
-        style: textTheme.bodyMedium?.copyWith(fontSize: 16.0),
+        style: textTheme.bodyLarge,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: SizedBox(
-        width: 120.0,
-        child: IngredientMonitor(key: ingredientKey, ingredient: ingredient),
+      subtitle: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text('Rate :', style: textTheme.bodyMedium),
+          const SizedBox(width: 5.0),
+          const Text(
+            '₹',
+            style: TextStyle(color: LightColors.main, fontSize: 15.0),
+          ),
+          // StreamBuilder(
+          //   stream: stream,
+          //   builder: (context, snapshot) {
+          //     if (snapshot.hasData) {
+          //       final latestRate = (snapshot.data!
+          //               as DocumentSnapshot<Map<String, dynamic>>)['latestRate']
+          //           as num;
+          //       return Text(
+          //         '$latestRate/${ingredient.unit}',
+          //         style: textTheme.bodyMedium,
+          //       );
+          //     }
+          //     return const SizedBox();
+          //   },
+          // ),
+          // const SizedBox(width: 10.0),
+          // Text(
+          //   'Avg :',
+          //   style: textTheme.bodyMedium,
+          // ),
+          // const SizedBox(width: 5.0),
+          // const Text(
+          //   '₹',
+          //   style: TextStyle(
+          //     color: LightColors.main,
+          //     fontSize: 15.0,
+          //   ),
+          // ),
+          StreamBuilder(
+            stream: stream,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                final avgRate = (snapshot.data! as DocumentSnapshot<
+                    Map<String, dynamic>>)['averageRate'] as num;
+                return Text(
+                  '$avgRate/${ingredient.unit}',
+                  style: textTheme.bodyMedium,
+                );
+              }
+              return const SizedBox();
+            },
+          ),
+        ],
+      ),
+      trailing: StreamBuilder(
+        stream: stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            final quantity = (snapshot.data!
+                as DocumentSnapshot<Map<String, dynamic>>)['quantity'] as num;
+
+            return quantity == 0
+                ? const Icon(
+                    Icons.warning_rounded,
+                    color: LightColors.warning,
+                    size: 30.0,
+                  )
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '$quantity',
+                        style: textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(width: 4.0),
+                      Text(
+                        ingredient.unit,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: LightColors.main,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  );
+          }
+          return const SizedBox();
+        },
       ),
     );
   }
@@ -167,51 +256,16 @@ class EditStockDialog extends StatelessWidget {
   EditStockDialog({
     super.key,
     required this.ingredient,
-    required this.quantityKey,
   });
   final Ingredient ingredient;
   final TextEditingController priceController = TextEditingController();
   final TextEditingController quantityController = TextEditingController();
-  final GlobalKey<IngredientMonitorState> quantityKey;
 
   final _formKey = GlobalKey<FormState>();
 
-  Widget _buildTextField({
-    Key? key,
-    required TextEditingController controller,
-    required String label,
-    TextStyle? inputTextStyle,
-    String? Function(String?)? validator,
-    Widget? suffix,
-    Widget? prefix,
-  }) {
-    return TextFormField(
-      key: key,
-      validator: validator,
-      style: inputTextStyle,
-      controller: controller,
-      textAlign: TextAlign.center,
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        isDense: true,
-        labelText: label,
-        border: const OutlineInputBorder(),
-        prefix: prefix,
-        suffix: suffix,
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      priceController.text = ingredient.rate.toString();
-    });
-
     final textTheme = Theme.of(context).textTheme;
-    final inputTextStyle = textTheme.bodyLarge?.copyWith(
-      fontWeight: FontWeight.w500,
-    );
     const extremeTextStyle = TextStyle(
       color: LightColors.main,
       fontSize: 16.0,
@@ -221,7 +275,7 @@ class EditStockDialog extends StatelessWidget {
       title: Text(
         ingredient.name,
         textAlign: TextAlign.center,
-        style: textTheme.titleLarge?.copyWith(color: LightColors.black),
+        style: textTheme.titleLarge?.copyWith(color: LightColors.text),
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -233,34 +287,38 @@ class EditStockDialog extends StatelessWidget {
           const SizedBox(height: 20.0),
           Form(
             key: _formKey,
-            child: _buildTextField(
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Enter additional quantity';
-                }
-                return null;
-              },
-              controller: quantityController,
-              label: 'Restock Amount',
-              inputTextStyle: inputTextStyle,
-              suffix: Text(
-                ingredient.subUnit,
-                style: extremeTextStyle,
-              ),
-            ),
-          ),
-          const SizedBox(height: 10.0),
-          _buildTextField(
-            controller: priceController,
-            label: 'Rate',
-            inputTextStyle: inputTextStyle,
-            prefix: const Text(
-              '₹',
-              style: extremeTextStyle,
-            ),
-            suffix: Text(
-              '(per ${ingredient.subUnit})',
-              style: extremeTextStyle,
+            child: Column(
+              children: [
+                MyTextField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Enter additional quantity';
+                    }
+                    return null;
+                  },
+                  controller: quantityController,
+                  label: 'Purchased Quantity',
+                  suffix: Text(
+                    ingredient.unit,
+                    style: extremeTextStyle,
+                  ),
+                ),
+                const SizedBox(height: 10.0),
+                MyTextField(
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Required total cost money';
+                    }
+                    return null;
+                  },
+                  controller: priceController,
+                  label: 'Total Price',
+                  prefix: const Text(
+                    '₹',
+                    style: extremeTextStyle,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -281,22 +339,31 @@ class EditStockDialog extends StatelessWidget {
             if (!_formKey.currentState!.validate()) {
               return;
             }
-            final newRate = num.parse(priceController.text);
-            final newQuantity =
-                ingredient.quantity + num.parse(quantityController.text);
 
-            final isSameRate = ingredient.rate == newRate;
-            updateIngredients(
-              ingredient.name,
-              newQuantity,
-              isSameRate ? null : newRate,
+            final totalPrice = num.parse(priceController.text);
+            final addedQuantity = num.parse(quantityController.text);
+
+            num averageRate = double.parse(
+              (((ingredient.averageRate * ingredient.quantity) + totalPrice) /
+                      (ingredient.quantity + addedQuantity))
+                  .toStringAsFixed(2),
             );
 
             Navigator.of(context).pop();
 
-            ingredient.quantity = newQuantity;
-            if (!isSameRate) ingredient.rate = newRate;
-            quantityKey.currentState!.updateUi();
+            updateIngredientDetails(
+              ingredient,
+              addedQuantity,
+              totalPrice,
+              averageRate,
+            ).then((_) {
+              ingredient.quantity += addedQuantity;
+              ingredient.averageRate = averageRate;
+              ingredient.latestRate =
+                  double.parse((totalPrice / addedQuantity).toStringAsFixed(2));
+            });
+
+            // quantityKey.currentState!.updateUi();
           },
           child: Text(
             'Done',

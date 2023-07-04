@@ -1,19 +1,13 @@
 import 'dart:ui';
 
 mixin LightColors {
-  static const Color bg = Color(0xff1f1f1f);
-  static const Color surface = Color(0xff363a3f);
-  static const Color main = Color(0xff3869ff);
-  static const Color blue = Color(0xff062e6f);
-  static const Color black = Color(0xff1f1f1f);
-  static const Color grey = Color(0xffc4c7c5);
-  static const Color greyM = Color(0xff7e7e7e);
-  static const Color darkGrey = Color.fromARGB(255, 80, 83, 90);
-  static const Color green = Color(0xff23cf96);
-  static const Color red = Color(0xffee675c);
-  static const Color orange = Color(0xFFF3B564);
-  static const Color brown = Color(0xfff27968);
-  static const Color cardColor = Color(0xffF4F6FA);
+  static const Color main = Color(0xff23cf96);
+  static const Color text = Color(0xff41454c);
+  static const Color textMedium = Color(0xff5b5e65);
+  static const Color lightText = Color(0xff97a1b6);
+  static const Color warning = Color(0xfff27968);
+  static const Color shadow = Color(0x230054ff);
+  static const Color greyCard = Color(0xfff7f7f7);
 }
 
 class AccentColors {
@@ -35,5 +29,3 @@ class AccentColors {
     Color(0xFFE64E81),
   ];
 }
-
-const padding = 18.0;
