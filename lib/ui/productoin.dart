@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:my_bakery/backend/cloud_storage.dart';
 
+import '../backend/cloud_storage.dart';
 import '../colors.dart';
 import 'my_widgets.dart';
 
