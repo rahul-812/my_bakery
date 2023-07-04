@@ -4,6 +4,7 @@ import 'package:my_bakery/colors.dart';
 
 import '../backend/cloud_storage.dart';
 import 'my_widgets.dart';
+import 'productoin.dart';
 
 class DepartmentsPage extends StatefulWidget {
   const DepartmentsPage({super.key});
@@ -184,13 +185,8 @@ class ProductList extends StatelessWidget {
         final product = products[index];
         return ListTile(
           onTap: () {
-            showModalBottomSheet(
-              elevation: 0.0,
-              isScrollControlled: true,
-              context: context,
-              builder: (_) => MakeProductSheet(
-                product: product,
-              ),
+            Navigator.of(context).push(
+              SliderRouteBuilder(ProductionPage(product: product)),
             );
           },
           leading: SvgPicture.asset(

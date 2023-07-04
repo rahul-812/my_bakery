@@ -29,5 +29,3 @@ class AccentColors {
     Color(0xFFE64E81),
   ];
 }
-
-const padding = 18.0;
