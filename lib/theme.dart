@@ -8,9 +8,8 @@ class CustomTheme {
       scaffoldBackgroundColor: Colors.white,
       colorScheme: const ColorScheme.light(primary: LightColors.main),
       appBarTheme: const AppBarTheme(
-        // toolbarHeight: 0.0,
         shape: Border(
-          bottom: BorderSide(color: Color(0xFFDDDFE0), width: 1),
+          bottom: BorderSide(color: LightColors.greyCard, width: 1),
         ),
         scrolledUnderElevation: 0.0,
       ),

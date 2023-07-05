@@ -180,8 +180,9 @@ class ProductList extends StatelessWidget {
         final product = products.elementAt(index);
         return ListTile(
           onTap: () {
-            Navigator.of(context)
-                .push(SliderRouteBuilder(ProductionPage(product: product)));
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => ProductionPage(product: product),
+            ));
           },
           leading: SvgPicture.asset(
             iconPath,

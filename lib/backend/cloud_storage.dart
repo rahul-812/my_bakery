@@ -1,43 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:my_bakery/main.dart';
 
 import '../model/ingredient_model.dart';
+import '../model/requirement_model.dart';
 
 final db = FirebaseFirestore.instance;
 final ingredientCollectionRef = db.collection('Ingredients');
 
-class Ingredient with ChangeNotifier {
-  Ingredient(
-    this.name,
-    this.unit,
-    this.quantity,
-    double averageRate,
-    double latestRate,
-  )   : _averageRate = averageRate,
-        _latestRate = latestRate;
-
-  final String name;
-  final String unit;
-  double quantity;
-  double _averageRate;
-  double _latestRate;
-
-  get averageRate => null;
-}
-
 Future<Iterable<Ingredient>> fetchIngredientsData() async {
-  final querySnapshot = await ingredientCollectionRef.get();
-
-  return querySnapshot.docs.map<Ingredient>(
-    (doc) => Ingredient(
-      doc.id,
-      doc['unit'],
-      doc['quantity'],
-      doc['averageRate'],
-      doc['latestRate'],
-    ),
-  );
+  return (await ingredientCollectionRef.get()).docs.map(
+        (document) => Ingredient.fromMap(document.id, document.data()),
+      );
 }
 
 // Map<String, Ingredient> formatIngredientsData(List<Ingredient> ingredientList) {
@@ -49,14 +25,13 @@ Future<Iterable<Ingredient>> fetchIngredientsData() async {
 // }
 
 Future<Ingredient> fetchAIngredientData(String ingredientName) async {
-  final documentSnapshot =
-      await ingredientCollectionRef.doc(ingredientName).get();
+  final document = await ingredientCollectionRef.doc(ingredientName).get();
   return Ingredient(
-    documentSnapshot.id,
-    documentSnapshot['unit'],
-    documentSnapshot['quantity'],
-    documentSnapshot['avarageRate'],
-    documentSnapshot['latestRate'],
+    document.id,
+    document['unit'],
+    document['quantity'],
+    document['avarageRate'],
+    document['latestRate'],
   );
 }
 
@@ -110,7 +85,7 @@ Future<void> addPurchaseRecord(
   num addedQuantity,
   num rate,
 ) async {
-  CollectionReference collectionRef = db.collection('purchase-history');
+  final collectionRef = db.collection('purchase-history');
   await collectionRef.add({
     "date": DateTime.now(),
     "name": ingredient.name,
@@ -126,8 +101,7 @@ Future<void> updateIngredientDetails(
   num totalPrice,
   num averageRate,
 ) async {
-  num latestRate =
-      double.parse((totalPrice / addedQuantity).toStringAsFixed(2));
+  num latestRate = (totalPrice / addedQuantity).toStringAsFixed(2).toNum;
 
   await ingredientCollectionRef.doc(ingredient.name).update({
     'quantity': FieldValue.increment(addedQuantity),
@@ -139,12 +113,6 @@ Future<void> updateIngredientDetails(
 }
 
 class Product {
-  final String key;
-  final String name;
-  final num quantity;
-  final num rate;
-  final Map<String, dynamic> requirements;
-
   const Product(
     this.key,
     this.name,
@@ -152,6 +120,12 @@ class Product {
     this.rate,
     this.requirements,
   );
+
+  final String key;
+  final String name;
+  final num quantity;
+  final num rate;
+  final List<Requirement> requirements;
 
   // static Map<String, dynamic> formatRequirements(
   //     Map<String, dynamic> requirements) {
@@ -178,12 +152,19 @@ class Department {
 
   static Iterable<Product> makeProductList(Map<String, dynamic> data) {
     return data.entries.map((e) {
+      final Map<String, dynamic> requirementMap = e.value['requirement'];
+      final requirements = requirementMap.entries
+          .map<Requirement>(
+            (entry) => Requirement(name: entry.key, quantity: entry.value),
+          )
+          .toList();
+
       return Product(
         e.key,
         e.value['name'],
         e.value['quantity'],
         e.value['rate'],
-        e.value['requirement'],
+        requirements,
       );
     });
   }
