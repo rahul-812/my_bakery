@@ -112,21 +112,18 @@ Future<void> updateIngredientDetails(
   await addPurchaseRecord(ingredient, addedQuantity, latestRate);
 }
 
-Future<void> useIngredient(
-  Ingredient ingredient,
-  num usedQuantity
-) async {
+Future<void> useIngredient(Ingredient ingredient, num usedQuantity) async {
   debugPrint('useIngredient($ingredient , $usedQuantity)');
-  if(usedQuantity>0){
-  await ingredientCollectionRef.doc(ingredient.name).update({
-    'quantity': FieldValue.increment(usedQuantity * -1),
-  });
-
+  if (usedQuantity > 0) {
+    await ingredientCollectionRef.doc(ingredient.name).update({
+      'quantity': FieldValue.increment(usedQuantity * -1),
+    });
+  } else {
+    await ingredientCollectionRef.doc(ingredient.name).update({
+      'quantity': FieldValue.increment(usedQuantity),
+    });
   }
-
 }
-
-
 
 class Product {
   const Product(
@@ -203,6 +200,13 @@ bool isValidValue(num v) {
   }
 }
 
+Future<void> addProductQuantity(String departmentName , String productKey , num quantity , num rate) async{
+  await db.collection('departments').doc(departmentName).update({
+    '$productKey.quantity' : FieldValue.increment(quantity),
+    '$productKey.rate' : rate 
+  });
+}
+
 // Future<void> calculateRequirementsAndPrice(
 //     Map<String, dynamic> ingredientRequirements, num batch) async {
 //   Map<String, Ingredient> ingredientsMap =
@@ -229,13 +233,13 @@ bool isValidValue(num v) {
 //     });
 //   }
 
-  // num calculateRate(num packates) {
-  //   num totalCost = 0;
-  //   priceControllers.forEach((key, value) {
-  //     totalCost += num.parse(value.text);
-  //   });
-  //   return double.parse((totalCost / packates).toStringAsFixed(2));
-  // }
+// num calculateRate(num packates) {
+//   num totalCost = 0;
+//   priceControllers.forEach((key, value) {
+//     totalCost += num.parse(value.text);
+//   });
+//   return double.parse((totalCost / packates).toStringAsFixed(2));
+// }
 
 //   Future<void> deductIngredients() async {
 //     quantityControllers.forEach((key, value) async {
