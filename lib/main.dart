@@ -6,9 +6,11 @@ import 'package:my_bakery/model/ingredient_model.dart';
 import 'package:my_bakery/ui/current_stock.dart';
 import 'package:provider/provider.dart';
 
+
 import './colors.dart';
 import 'theme.dart';
 import 'ui/department.dart';
+import 'ui/purchase_history.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,10 +50,10 @@ class _UiPageHolderState extends State<UiPageHolder> {
   @override
   void initState() {
     super.initState();
-    _uiPages = const [
-      CurrentStockPage(),
-      DepartmentsPage(),
-      // PurchaseHistoryPage(),
+    _uiPages = [
+      const CurrentStockPage(),
+      const DepartmentsPage(),
+      PurchaseHistoryPage(),
     ];
   }
 
@@ -93,14 +95,14 @@ class _UiPageHolderState extends State<UiPageHolder> {
             ),
             label: 'Products',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(
-          //     _currentIndex != 2
-          //         ? Icons.access_time_sharp
-          //         : Icons.access_time_filled,
-          //   ),
-          //   label: 'History',
-          // )
+          BottomNavigationBarItem(
+            icon: Icon(
+              _currentIndex != 2
+                  ? Icons.access_time_sharp
+                  : Icons.access_time_filled,
+            ),
+            label: 'History',
+          )
         ],
       ),
     );

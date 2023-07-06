@@ -2,14 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:my_bakery/backend/cloud_storage.dart';
 import 'package:my_bakery/main.dart';
 import 'package:provider/provider.dart';
-
 import '../colors.dart';
 import '../model/ingredient_model.dart';
 import 'my_widgets.dart';
 
 class CurrentStockPage extends StatefulWidget {
   const CurrentStockPage({Key? key}) : super(key: key);
-
   @override
   State<CurrentStockPage> createState() => _CurrentStockPageState();
 }

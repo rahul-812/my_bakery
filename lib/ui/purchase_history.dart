@@ -3,7 +3,7 @@ import 'package:my_bakery/backend/cloud_storage.dart';
 
 class PurchaseHistoryPage extends StatelessWidget {
   PurchaseHistoryPage({super.key});
-
+  
   final Future<Iterable<PurchaseHistory>> _futurePurchaseHistory =
       fetchPurchaseRecords(DateTime(2023, 6, 13), DateTime.now());
 
