@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 mixin LightColors {
+  // static const Color main = Color(0xFF5161DA);
   static const Color main = Color(0xff23cf96);
   static const Color text = Color(0xff41454c);
   static const Color textMedium = Color(0xff5b5e65);

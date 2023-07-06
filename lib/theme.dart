@@ -8,10 +8,9 @@ class CustomTheme {
       scaffoldBackgroundColor: Colors.white,
       colorScheme: const ColorScheme.light(primary: LightColors.main),
       appBarTheme: const AppBarTheme(
-        // toolbarHeight: 0.0,
-        shape: Border(
-          bottom: BorderSide(color: Color(0xFFDDDFE0), width: 1),
-        ),
+        // shape: Border(
+        //   bottom: BorderSide(color: LightColors.greyCard, width: 1),
+        // ),
         scrolledUnderElevation: 0.0,
       ),
       textTheme: const TextTheme(
@@ -26,6 +25,16 @@ class CustomTheme {
         ),
         bodySmall: TextStyle(color: LightColors.lightText),
       ),
+      listTileTheme: ListTileThemeData(
+        dense: true,
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12.0,
+          vertical: 8.0,
+        ),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+      ),
       iconTheme: const IconThemeData(color: LightColors.main),
       inputDecorationTheme: InputDecorationTheme(
         isDense: true,
@@ -38,24 +47,24 @@ class CustomTheme {
           borderSide: const BorderSide(color: LightColors.main),
         ),
       ),
-      dividerTheme: const DividerThemeData(
-        color: Color(0xffedeef1),
-      ),
+      dividerTheme:
+          const DividerThemeData(color: Color(0xffedeef1), space: 0.0),
       dialogTheme: const DialogTheme(elevation: 0.0),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         selectedItemColor: LightColors.main,
       ),
-      tabBarTheme: TabBarTheme(
+      tabBarTheme: const TabBarTheme(
         splashFactory: InkRipple.splashFactory,
         // labelColor: const Color(0xffbe500f),
         labelColor: LightColors.text,
         unselectedLabelColor: LightColors.lightText,
         indicatorSize: TabBarIndicatorSize.tab,
-        labelPadding: const EdgeInsets.symmetric(horizontal: 12.0),
-        indicator: BoxDecoration(
-          color: LightColors.greyCard,
-          borderRadius: BorderRadius.circular(8.0),
-        ),
+        labelPadding: EdgeInsets.symmetric(horizontal: 12.0),
+        // indicator: BoxDecoration(
+        //   color: Colors.black87,
+        //   borderRadius: BorderRadius.circular(8.0),
+        // ),
+        indicatorColor: LightColors.main,
       ),
     );
   }
