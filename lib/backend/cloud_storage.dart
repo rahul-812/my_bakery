@@ -112,6 +112,22 @@ Future<void> updateIngredientDetails(
   await addPurchaseRecord(ingredient, addedQuantity, latestRate);
 }
 
+Future<void> useIngredient(
+  Ingredient ingredient,
+  num usedQuantity
+) async {
+  debugPrint('useIngredient($ingredient , $usedQuantity)');
+  if(usedQuantity>0){
+  await ingredientCollectionRef.doc(ingredient.name).update({
+    'quantity': FieldValue.increment(usedQuantity * -1),
+  });
+
+  }
+
+}
+
+
+
 class Product {
   const Product(
     this.key,
@@ -213,13 +229,13 @@ bool isValidValue(num v) {
 //     });
 //   }
 
-//   num calculateRate(num packates) {
-//     num totalCost = 0;
-//     priceControllers.forEach((key, value) {
-//       totalCost += num.parse(value.text);
-//     });
-//     return double.parse((totalCost / packates).toStringAsFixed(2));
-//   }
+  // num calculateRate(num packates) {
+  //   num totalCost = 0;
+  //   priceControllers.forEach((key, value) {
+  //     totalCost += num.parse(value.text);
+  //   });
+  //   return double.parse((totalCost / packates).toStringAsFixed(2));
+  // }
 
 //   Future<void> deductIngredients() async {
 //     quantityControllers.forEach((key, value) async {

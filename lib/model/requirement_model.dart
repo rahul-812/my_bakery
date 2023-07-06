@@ -10,6 +10,7 @@ class Requirement extends ChangeNotifier {
     this.associatedIngredient,
     this.qController,
     this.isEnough,
+    this.pController
   });
 
   final String name;
@@ -17,6 +18,7 @@ class Requirement extends ChangeNotifier {
   Ingredient? associatedIngredient;
   TextEditingController? qController;
   bool? isEnough;
+  TextEditingController? pController;
   // final TextEditingController qController;
 
   void haveEnoughInStock(bool value) {

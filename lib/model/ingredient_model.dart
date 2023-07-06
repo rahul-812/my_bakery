@@ -50,5 +50,6 @@ class Ingredient with ChangeNotifier {
 }
 
 class Ingredients {
+
   static late final Iterable<Ingredient> data;
 }
