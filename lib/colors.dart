@@ -1,8 +1,8 @@
 import 'dart:ui';
 
 mixin LightColors {
-  static const Color main = Color.fromARGB(255, 17, 222, 178);
-  // static const Color main = Color(0xff23cf96);
+  // static const Color main = Color(0xFF5161DA);
+  static const Color main = Color(0xff23cf96);
   static const Color text = Color(0xff41454c);
   static const Color textMedium = Color(0xff5b5e65);
   static const Color lightText = Color(0xff97a1b6);

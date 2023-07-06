@@ -30,51 +30,53 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: CustomTheme.light,
-      home: const UiPageHolder(),
+      home: const UiPageHolder(
+        screens: [
+          CurrentStockPage(),
+          DepartmentsPage(),
+        ],
+      ),
     );
   }
 }
 
 class UiPageHolder extends StatefulWidget {
-  const UiPageHolder({super.key});
+  const UiPageHolder({super.key, required this.screens});
+
+  final List<Widget> screens;
 
   @override
   State<UiPageHolder> createState() => _UiPageHolderState();
 }
 
 class _UiPageHolderState extends State<UiPageHolder> {
-  late final List<Widget> _uiPages;
-
-  @override
-  void initState() {
-    super.initState();
-    _uiPages = const [
-      CurrentStockPage(),
-      DepartmentsPage(),
-      // PurchaseHistoryPage(),
-    ];
-  }
-
   int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _currentIndex == 1 ? const Color(0xFFF5F5F5) : null,
+      // backgroundColor: _currentIndex == 1 ? const Color(0xFFF5F5F5) : null,
       appBar: AppBar(
-        toolbarHeight: 0.0,
+        // toolbarHeight: 0.0,
         centerTitle: true,
         title: const Text('Swadesh Bakery'),
-        actions: const [
-          Icon(
-            Icons.cake,
-            color: LightColors.main,
-          ),
-          SizedBox(width: 30.0),
-        ],
+        // bottom: const TabBar(
+        //   tabs: [
+        //     Tab(child: Text('Stock')),
+        //     Tab(child: Text('Department')),
+        //   ],
+        // ),
       ),
-      // body: const DepartmentsPage(),
-      body: _uiPages[_currentIndex],
+      // body: const TabBarView(
+      //   children: [
+      //     CurrentStockPage(),
+      //     DepartmentsPage(),
+      //   ],
+      // ),
+      body: IndexedStack(
+        index: _currentIndex,
+        children: widget.screens,
+      ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),

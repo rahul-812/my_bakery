@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:my_bakery/backend/cloud_storage.dart';
 import 'package:my_bakery/main.dart';
 import 'package:provider/provider.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../colors.dart';
 import '../model/ingredient_model.dart';
@@ -32,7 +33,7 @@ class _CurrentStockPageState extends State<CurrentStockPage> {
           return const Icon(Icons.error, color: Colors.red);
         } else if (snapshot.hasData) {
           // Globally accessible
-          Ingredients.data = snapshot.data!;
+          Ingredients.data ??= snapshot.data!;
 
           return SingleChildScrollView(
             child: Column(
@@ -57,7 +58,9 @@ class _CurrentStockPageState extends State<CurrentStockPage> {
             ),
           );
         }
-        return const RepaintBoundary(child: CircularProgressIndicator());
+        return const Center(
+          child: RepaintBoundary(child: CircularProgressIndicator()),
+        );
       },
     );
   }
@@ -75,13 +78,13 @@ class StockList extends StatelessWidget {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 30.0),
       itemCount: list.length,
       itemBuilder: (context, index) => GoodsTile(
         ingredient: list.elementAt(index),
         avatarColor: accentColors.next,
       ),
-      separatorBuilder: (context, index) => const SizedBox(height: 5.0),
+      separatorBuilder: (_, __) => const Divider(),
     );
   }
 }
@@ -115,13 +118,6 @@ class GoodsTile extends StatelessWidget {
       value: ingredient,
       child: ListTile(
         onTap: () => _openEditDialog(context),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 10.0,
-          vertical: 5.0,
-        ),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-        ),
         leading: CircleAvatar(
           radius: 20.0,
           backgroundColor: avatarColor,
@@ -143,11 +139,13 @@ class GoodsTile extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Text('Rate :', style: textTheme.bodyMedium),
-            const SizedBox(width: 5.0),
-            const Icon(
-              Icons.currency_rupee_rounded,
-              size: 12.0,
-              color: LightColors.main,
+            const Padding(
+              padding: EdgeInsets.all(5.0),
+              child: Icon(
+                Icons.currency_rupee_rounded,
+                size: 15.0,
+                color: LightColors.main,
+              ),
             ),
             Consumer<Ingredient>(
               builder: (context, ingredient, child) => Text(

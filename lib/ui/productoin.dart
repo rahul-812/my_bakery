@@ -35,7 +35,7 @@ class _ProductionPageState extends State<ProductionPage> {
       if (requirement.quantity == null) continue;
 
       // Filtered only ingredients whose quantity is not null
-      requirement.associatedIngredient = Ingredients.data
+      requirement.associatedIngredient = Ingredients.data!
           .singleWhere((ingredient) => ingredient.name == requirement.name);
       requirement.qController =
           TextEditingController(text: '${requirement.quantity}');
