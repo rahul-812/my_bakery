@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 
 import './colors.dart';
 import 'theme.dart';
+import 'ui/admin_signin.dart';
 import 'ui/department.dart';
 
 void main() async {
@@ -30,12 +31,13 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: CustomTheme.light,
-      home: const UiPageHolder(
-        screens: [
-          CurrentStockPage(),
-          DepartmentsPage(),
-        ],
-      ),
+      // home: const UiPageHolder(
+      //   screens: [
+      //     CurrentStockPage(),
+      //     DepartmentsPage(),
+      //   ],
+      // ),
+      home: const AdminSignInPage(),
     );
   }
 }
@@ -57,7 +59,7 @@ class _UiPageHolderState extends State<UiPageHolder> {
     return Scaffold(
       // backgroundColor: _currentIndex == 1 ? const Color(0xFFF5F5F5) : null,
       appBar: AppBar(
-        // toolbarHeight: 0.0,
+        shape: const Border(bottom: BorderSide(color: LightColors.greyCard)),
         centerTitle: true,
         title: const Text('Swadesh Bakery'),
         // bottom: const TabBar(

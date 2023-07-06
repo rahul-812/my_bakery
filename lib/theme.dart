@@ -7,12 +7,7 @@ class CustomTheme {
     return ThemeData.light(useMaterial3: true).copyWith(
       scaffoldBackgroundColor: Colors.white,
       colorScheme: const ColorScheme.light(primary: LightColors.main),
-      appBarTheme: const AppBarTheme(
-        // shape: Border(
-        //   bottom: BorderSide(color: LightColors.greyCard, width: 1),
-        // ),
-        scrolledUnderElevation: 0.0,
-      ),
+      appBarTheme: const AppBarTheme(scrolledUnderElevation: 0.0),
       textTheme: const TextTheme(
         bodyLarge: TextStyle(
           color: LightColors.text,
