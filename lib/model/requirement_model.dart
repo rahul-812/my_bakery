@@ -10,7 +10,7 @@ class Requirement extends ChangeNotifier {
     this.associatedIngredient,
     this.qController,
     this.isEnough,
-    this.pController
+    this.pController,
   });
 
   final String name;

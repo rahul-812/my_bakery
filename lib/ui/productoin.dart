@@ -24,7 +24,7 @@ class ProductionPage extends StatefulWidget {
 class _ProductionPageState extends State<ProductionPage> {
   final batchController = TextEditingController(text: '1');
   //* packateController value must be greater than 1 otherwise calculaterate() will return infinity
-  final packetController = TextEditingController(text: '1'); 
+  final packetController = TextEditingController(text: '1');
 
   late final List<Requirement> _requirements;
 
@@ -36,17 +36,17 @@ class _ProductionPageState extends State<ProductionPage> {
     for (var requirement in _requirements) {
       if (requirement.quantity != null) {
         // Filtered only ingredients whose quantity is not null
-      requirement.associatedIngredient = Ingredients.data
-          .singleWhere((ingredient) => ingredient.name == requirement.name);
-      requirement.qController =
-          TextEditingController(text: '${requirement.quantity}');
-      requirement.pController = TextEditingController(text: '${requirement.associatedIngredient?.averageRate}');
-      requirement.isEnough =
-          requirement.quantity! <= requirement.associatedIngredient!.quantity;
-      }else{
+        requirement.associatedIngredient = Ingredients.data
+            .singleWhere((ingredient) => ingredient.name == requirement.name);
+        requirement.qController =
+            TextEditingController(text: '${requirement.quantity}');
+        requirement.pController = TextEditingController(
+            text: '${requirement.associatedIngredient?.averageRate}');
+        requirement.isEnough =
+            requirement.quantity! <= requirement.associatedIngredient!.quantity;
+      } else {
         requirement.pController = TextEditingController(text: '0.0');
       }
-      
     }
   }
 
@@ -65,32 +65,31 @@ class _ProductionPageState extends State<ProductionPage> {
     super.dispose();
   }
 
- num calculateRate() {
+  num calculateRate() {
     num totalCost = 0;
     int totalPackets = packetController.text.toInt;
-    for (var requirement in _requirements){
+    for (var requirement in _requirements) {
       totalCost += requirement.pController!.text.toNum;
     }
-    debugPrint('[calculateRate()] total cost : $totalCost & total packets : $totalPackets');
+    debugPrint(
+        '[calculateRate()] total cost : $totalCost & total packets : $totalPackets');
     return double.parse((totalCost / totalPackets).toStringAsFixed(2));
   }
 
-  Future<void> deductIngredients() async{
+  Future<void> deductIngredients() async {
     //later we  will merge this functionility in the calculateRate()
-    for(var requirement in _requirements){
-      if(requirement.quantity != null){
-            debugPrint('[deductIngredients()] Deducting ${requirement.associatedIngredient!.name}');
-        await useIngredient(requirement.associatedIngredient!,requirement.qController!.text.toNum);
+    for (var requirement in _requirements) {
+      if (requirement.quantity != null) {
+        debugPrint(
+            '[deductIngredients()] Deducting ${requirement.associatedIngredient!.name}');
+        await useIngredient(requirement.associatedIngredient!,
+            requirement.qController!.text.toNum);
       }
-
     }
-
   }
 
-
   void _onTextChange(String text) {
-    
-    final batch = text.isEmpty? 0: text.toInt;
+    final batch = text.isEmpty ? 0 : text.toInt;
 
     for (var requirement in _requirements) {
       // Ignore if not ingredient
@@ -104,7 +103,8 @@ class _ProductionPageState extends State<ProductionPage> {
         requirement.haveEnoughInStock(true);
       }
       requirement.qController!.text = '$requiredQuantity';
-      requirement.pController!.text = '${requiredQuantity * requirement.associatedIngredient!.averageRate}';
+      requirement.pController!.text =
+          '${requiredQuantity * requirement.associatedIngredient!.averageRate}';
     }
   }
 
@@ -175,9 +175,9 @@ class _ProductionPageState extends State<ProductionPage> {
                     ),
                   ),
                   const SizedBox(width: 14.0),
-                   Expanded(child: MyTextField(
-                    controller: packetController,
-                    hint: 'Packets')),
+                  Expanded(
+                      child: MyTextField(
+                          controller: packetController, hint: 'Packets')),
                 ],
               ),
               const SizedBox(height: 35.0),
@@ -252,9 +252,6 @@ class _RequirementTextField extends StatelessWidget {
     );
   }
 }
-
-
-
 
 class RequirementCard extends StatelessWidget {
   const RequirementCard(
@@ -366,28 +363,26 @@ class RequirementCard extends StatelessWidget {
                   size: 15.0,
                 ),
                 SizedBox(
-                    width: 50.0,
-                    child: ChangeNotifierProvider.value(
-                      value: requirement,
-                      child: Consumer<Requirement>(
-                        builder: (_, requirement, __) {
-                          return _RequirementTextField(
-                            controller: requirement.pController,
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w700,
-                                ),
-                          );
-                        },
-                      ),
+                  width: 50.0,
+                  child: ChangeNotifierProvider.value(
+                    value: requirement,
+                    child: Consumer<Requirement>(
+                      builder: (_, requirement, __) {
+                        return _RequirementTextField(
+                          controller: requirement.pController,
+                          style:
+                              Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                        );
+                      },
                     ),
                   ),
+                ),
               ],
             ),
           ),
-           //if (!isIngredient) const Spacer(),
+          //if (!isIngredient) const Spacer(),
         ],
       ),
     );
