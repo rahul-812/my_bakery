@@ -14,7 +14,9 @@ class ButtonState extends ChangeNotifier {
   bool disabled = false;
 
   void deactivate(bool value) {
+    if (disabled == value) return;
     disabled = value;
+    notifyListeners();
   }
 }
 
@@ -43,13 +45,13 @@ class _ProductionPageState extends State<ProductionPage> {
       if (requirement.quantity == null) continue;
 
       // Filtered only ingredients whose quantity is not null
-      final initialCost =
-          requirement.quantity! * requirement.ingredient!.latestRate;
       requirement
         ..ingredient = Ingredients.data!
             .singleWhere((ingredient) => ingredient.name == requirement.name)
         ..qController = TextEditingController(text: '${requirement.quantity}')
-        ..qController = TextEditingController(text: '$initialCost')
+        ..pController = TextEditingController(
+          text: '${requirement.quantity! * requirement.ingredient!.latestRate}',
+        )
         ..hasEnough = requirement.quantity! <= requirement.ingredient!.quantity;
       if (!makeButtonState.disabled && !requirement.hasEnough!) {
         makeButtonState.disabled = true;
@@ -73,27 +75,18 @@ class _ProductionPageState extends State<ProductionPage> {
     if (text.isEmpty) return;
 
     final batch = text.toInt;
-    bool canMakeProduct = makeButtonState.disabled;
+    bool canMakeProduct = true;
 
     for (var requirement in _requirements) {
       // Ignore if not ingredient
-      if (requirement.quantity == null) return;
+      if (requirement.quantity == null) continue;
 
       final requiredQuantity = requirement.quantity! * batch;
       final ifQuantityExceeds =
           requiredQuantity > requirement.ingredient!.quantity;
-      // If not enough stock for this ingredient
-      requirement.canDeductFromStock(ifQuantityExceeds);
 
-      // if (!ifQuantityExceeds) {
-      //   requirement.canDeductFromStock(false);
-      //   if (!makeButtonState.disabled) {
-      //     makeButtonState.deactivate(true);
-      //   }
-      // } else {
-      //   requirement.canDeductFromStock(true);
-      //   if (makeButtonState.disabled) makeButtonState.deactivate(false);
-      // }
+      // If not enough stock for this ingredient
+      requirement.canDeductFromStock(!ifQuantityExceeds);
 
       if (ifQuantityExceeds) canMakeProduct = false;
 
@@ -104,6 +97,8 @@ class _ProductionPageState extends State<ProductionPage> {
 
     makeButtonState.deactivate(!canMakeProduct);
   }
+
+  void _onMakeProduct() {}
 
   @override
   Widget build(BuildContext context) {
@@ -200,14 +195,14 @@ class _ProductionPageState extends State<ProductionPage> {
           value: makeButtonState,
           child: Consumer<ButtonState>(
             builder: (_, makeButtonState, child) => MaterialButton(
-              onPressed: makeButtonState.disabled ? null : () {},
-              disabledColor: const Color(0xFFD8D8D8),
+              onPressed: makeButtonState.disabled ? null : _onMakeProduct,
+              disabledColor: const Color(0xFFDBDBDB),
               elevation: 0.0,
               disabledTextColor: Colors.black,
               highlightElevation: 0.0,
               minWidth: double.infinity,
               shape: const StadiumBorder(),
-              color: const Color(0xFF3E4341),
+              color: Colors.black87,
               height: 46.0,
               textColor: Colors.white,
               child: child,
@@ -259,13 +254,12 @@ class RequirementCard extends StatelessWidget {
     final isIngredient = requirement.qController != null;
 
     return Container(
-      // height: 110.0,
       decoration: BoxDecoration(
         color: LightColors.greyCard,
         borderRadius: BorderRadius.circular(12.0),
         border: Border.all(color: const Color(0xFFEBEDEE)),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 15.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: ChangeNotifierProvider.value(
         value: requirement,
         child: Column(
@@ -346,9 +340,9 @@ class RequirementCard extends StatelessWidget {
                   const Spacer(),
                   const Icon(Icons.currency_rupee, size: 15.0),
                   SizedBox(
-                    width: 35.0,
+                    width: 50.0,
                     child: _RequirementTextField(
-                      controller: requirement.qController,
+                      controller: requirement.pController,
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium
