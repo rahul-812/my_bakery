@@ -216,7 +216,7 @@ class EditStockDialog extends StatelessWidget {
             .toStringAsFixed(2)
             .toNum;
 
-    updateIngredientDetails(ingredient, addedQuantity, totalPrice, averageRate)
+    addIngredientStock(ingredient, addedQuantity, totalPrice, averageRate)
         .then((_) {
       ingredient.increaseQuantity(addedQuantity);
       ingredient.updateAverageRate(averageRate);

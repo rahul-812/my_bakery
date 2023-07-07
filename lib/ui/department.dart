@@ -19,7 +19,7 @@ class _DepartmentsPageState extends State<DepartmentsPage> {
   @override
   void initState() {
     super.initState();
-    _futureDepartment = fetchDepartmentData();
+    _futureDepartment = fetchDepartmentsData();
   }
 
   @override

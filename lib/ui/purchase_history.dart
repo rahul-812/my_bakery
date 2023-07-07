@@ -4,12 +4,12 @@ import 'package:my_bakery/backend/cloud_storage.dart';
 class PurchaseHistoryPage extends StatelessWidget {
   PurchaseHistoryPage({super.key});
   
-  final Future<Iterable<PurchaseHistory>> _futurePurchaseHistory =
+  final Future<Iterable<PurchaseRecord>> _futurePurchaseHistory =
       fetchPurchaseRecords(DateTime(2023, 6, 13), DateTime.now());
 
   @override
   Widget build(context) {
-    return FutureBuilder<Iterable<PurchaseHistory>>(
+    return FutureBuilder<Iterable<PurchaseRecord>>(
       future: _futurePurchaseHistory,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
@@ -41,7 +41,7 @@ class PurchaseHistoryPage extends StatelessWidget {
 class HistoryTable extends StatelessWidget {
   const HistoryTable({super.key, required this.history});
 
-  final Iterable<PurchaseHistory> history;
+  final Iterable<PurchaseRecord> history;
 
   @override
   Widget build(BuildContext context) {

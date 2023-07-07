@@ -213,7 +213,7 @@ class _ProductionPageState extends State<ProductionPage> {
             num rate = calculateRate();
             debugPrint('rate : $rate');
             await deductIngredients();
-            await addProductQuantity('Hand Biscuit', widget.product.key , packetController.text.toInt , rate);
+            await addProductStock('Hand Biscuit', widget.product.key , packetController.text.toInt , rate);
           },
           disabledColor: const Color(0xFFD8D8D8),
           elevation: 0.0,
