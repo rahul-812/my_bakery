@@ -46,19 +46,3 @@ class MyTextField extends StatelessWidget {
     );
   }
 }
-
-class SliderRouteBuilder extends PageRouteBuilder {
-  SliderRouteBuilder(Widget child)
-      : super(
-          pageBuilder: (_, __, ___) => child,
-          transitionsBuilder: (_, animation, ___, child) {
-            return SlideTransition(
-              position: Tween(begin: const Offset(1.0, 0.0), end: Offset.zero)
-                  .animate(
-                CurvedAnimation(parent: animation, curve: Curves.decelerate),
-              ),
-              child: child,
-            );
-          },
-        );
-}

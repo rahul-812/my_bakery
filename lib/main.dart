@@ -1,24 +1,18 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:my_bakery/backend/cloud_storage.dart';
-import 'package:my_bakery/model/ingredient_model.dart';
-import 'package:my_bakery/ui/current_stock.dart';
-import 'package:provider/provider.dart';
+import 'ui/current_stock.dart';
 
-import './colors.dart';
 import 'theme.dart';
+import 'colors.dart';
 import 'ui/department.dart';
+import 'ui/admin_signin.dart';
+import 'backend/cloud_storage.dart';
+import 'model/ingredient_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
-}
-
-extension ToNumber on String {
-  num get toNum => num.parse(this);
-  int get toInt => int.parse(this);
 }
 
 class MyApp extends StatelessWidget {
@@ -55,24 +49,11 @@ class _UiPageHolderState extends State<UiPageHolder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: _currentIndex == 1 ? const Color(0xFFF5F5F5) : null,
       appBar: AppBar(
-        // toolbarHeight: 0.0,
+        shape: const Border(bottom: BorderSide(color: LightColors.greyCard)),
         centerTitle: true,
         title: const Text('Swadesh Bakery'),
-        // bottom: const TabBar(
-        //   tabs: [
-        //     Tab(child: Text('Stock')),
-        //     Tab(child: Text('Department')),
-        //   ],
-        // ),
       ),
-      // body: const TabBarView(
-      //   children: [
-      //     CurrentStockPage(),
-      //     DepartmentsPage(),
-      //   ],
-      // ),
       body: IndexedStack(
         index: _currentIndex,
         children: widget.screens,
