@@ -7,21 +7,22 @@ class Requirement extends ChangeNotifier {
   Requirement({
     required this.name,
     this.quantity,
-    this.associatedIngredient,
+    this.ingredient,
     this.qController,
-    this.isEnough,
+    this.pController,
+    this.hasEnough,
   });
 
   final String name;
   final num? quantity;
-  Ingredient? associatedIngredient;
+  Ingredient? ingredient;
   TextEditingController? qController;
-  bool? isEnough;
-  // final TextEditingController qController;
+  bool? hasEnough;
+  TextEditingController? pController;
 
-  void haveEnoughInStock(bool value) {
-    if (value == isEnough) return;
-    isEnough = value;
+  void canDeductFromStock(bool value) {
+    if (value == hasEnough) return;
+    hasEnough = value;
     notifyListeners();
   }
 }

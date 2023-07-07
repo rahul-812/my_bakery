@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:my_bakery/backend/cloud_storage.dart';
-import 'package:my_bakery/main.dart';
 import 'package:provider/provider.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../colors.dart';
 import '../model/ingredient_model.dart';
 import 'my_widgets.dart';
+import '../util.dart';
 
 class CurrentStockPage extends StatefulWidget {
   const CurrentStockPage({Key? key}) : super(key: key);
