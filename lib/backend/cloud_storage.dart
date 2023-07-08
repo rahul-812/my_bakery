@@ -10,7 +10,6 @@ final db = FirebaseFirestore.instance;
 final ingredientCollectionRef = db.collection('Ingredients');
 
 Future<Iterable<Ingredient>> fetchIngredientsData() async {
-  debugPrint('running...fechIngredientsData().............');
   return (await ingredientCollectionRef.get()).docs.map(
         (document) => Ingredient.fromMap(document.id, document.data()),
       );
