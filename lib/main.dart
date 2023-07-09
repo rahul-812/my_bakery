@@ -1,14 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'ui/current_stock.dart';
 
 import 'theme.dart';
 import 'colors.dart';
-import 'ui/department.dart';
-import 'ui/signin.dart';
-import 'backend/cloud_storage.dart';
-import 'model/ingredient_model.dart';
+import 'ui/ingredient_page.dart';
+import 'ui/department_page.dart';
+import 'ui/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -91,9 +89,7 @@ class _UiPageHolderState extends State<UiPageHolder> {
             label: 'Stock',
           ),
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.cookie_outlined,
-            ),
+            icon: Icon(Icons.cookie_outlined),
             label: 'Products',
           ),
           // BottomNavigationBarItem(

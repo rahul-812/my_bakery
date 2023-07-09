@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:my_bakery/backend/cloud_storage.dart';
+import 'package:my_bakery/backend/db_functions.dart';
 import 'package:provider/provider.dart';
 
 import '../colors.dart';
@@ -214,7 +214,7 @@ class EditStockDialog extends StatelessWidget {
             .toStringAsFixed(2)
             .toNum;
 
-    updateIngredientDetails(ingredient, addedQuantity, totalPrice, averageRate)
+    addIngredientStock(ingredient, addedQuantity, totalPrice, averageRate)
         .then((_) {
       ingredient.increaseQuantity(addedQuantity);
       ingredient.updateAverageRate(averageRate);

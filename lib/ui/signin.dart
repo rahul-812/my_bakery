@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:my_bakery/backend/admin_auth.dart';
 import 'package:provider/provider.dart';
+
+import '../backend/auth.dart';
 
 class LoadingOverlay extends ChangeNotifier {
   bool _show = false;
