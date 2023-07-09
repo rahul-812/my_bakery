@@ -4,7 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../util.dart';
-import '../backend/cloud_storage.dart';
+import '../backend/db_functions.dart';
 import '../colors.dart';
 import '../model/ingredient_model.dart';
 import '../model/requirement_model.dart';
@@ -29,7 +29,8 @@ class ProductionPage extends StatefulWidget {
 
 class _ProductionPageState extends State<ProductionPage> {
   final batchController = TextEditingController(text: '1');
-
+   //* packateController value must be greater than 1 otherwise calculaterate() will return infinity
+  final packetController = TextEditingController(text: '1');
   late final List<Requirement> _requirements;
   final makeButtonState = ButtonState();
 
@@ -99,10 +100,32 @@ class _ProductionPageState extends State<ProductionPage> {
 
       requirement.qController!.text = '$requiredQuantity';
       requirement.pController!.text =
-          '${requiredQuantity * requirement.ingredient!.latestRate}';
+          '${requiredQuantity * requirement.ingredient!.averageRate}';
     }
-
     makeButtonState.deactivate(!canMakeProduct);
+  }
+
+   num calculateRate() {
+    num totalCost = 0;
+    int totalPackets = packetController.text.toInt;
+    for (var requirement in _requirements) {
+      totalCost += requirement.pController!.text.toNum;
+    }
+    debugPrint(
+        '[calculateRate()] total cost : $totalCost & total packets : $totalPackets');
+    return double.parse((totalCost / totalPackets).toStringAsFixed(2));
+  }
+
+  Future<void> deductIngredients() async {
+    //later we  will merge this functionility in the calculateRate()
+    for (var requirement in _requirements) {
+      if (requirement.quantity != null) {
+        debugPrint(
+            '[deductIngredients()] Deducting ${requirement.ingredient!.name}');
+        await useIngredient(requirement.ingredient!,
+            requirement.qController!.text.toNum);
+      }
+    }
   }
 
   @override
@@ -135,14 +158,14 @@ class _ProductionPageState extends State<ProductionPage> {
                     const SizedBox(width: 11.0),
                     SvgPicture.asset('icons/tag.svg'),
                     Text(
-                      '46',
+                      '${widget.product.quantity}',
                       style: textTheme.bodyLarge?.copyWith(
                         fontSize: 14.0,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
-                      'Batches',
+                      'Packets',
                       style: textTheme.bodyMedium?.copyWith(fontSize: 11.0),
                     ),
                   ],
@@ -167,7 +190,7 @@ class _ProductionPageState extends State<ProductionPage> {
                     ),
                   ),
                   const SizedBox(width: 14.0),
-                  const Expanded(child: MyTextField(hint: 'Packets')),
+                  Expanded(child: MyTextField(controller: packetController,hint: 'Packets')),
                 ],
               ),
               const SizedBox(height: 35.0),
@@ -200,7 +223,12 @@ class _ProductionPageState extends State<ProductionPage> {
           value: makeButtonState,
           child: Consumer<ButtonState>(
             builder: (_, makeButtonState, child) => MaterialButton(
-              onPressed: makeButtonState.disabled ? null : () {},
+              onPressed: makeButtonState.disabled ? null :() async {
+                num rate = calculateRate();
+                debugPrint('rate : $rate');
+                await deductIngredients();
+                await addProductStock('Hand Biscuit', widget.product.key , packetController.text.toInt , rate);
+              },
               disabledColor: const Color(0xFFD8D8D8),
               elevation: 0.0,
               disabledTextColor: Colors.black,
@@ -329,7 +357,7 @@ class RequirementCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      'KG',
+                      '$requirement.ingredient.unit',
                       style: textTheme?.bodyMedium?.copyWith(fontSize: 13.0),
                     ),
                   ],
