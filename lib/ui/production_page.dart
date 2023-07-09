@@ -190,7 +190,7 @@ class _ProductionPageState extends State<ProductionPage> {
                     ),
                   ),
                   const SizedBox(width: 14.0),
-                  const Expanded(child: MyTextField(controller: packetController,hint: 'Packets')),
+                  Expanded(child: MyTextField(controller: packetController,hint: 'Packets')),
                 ],
               ),
               const SizedBox(height: 35.0),
@@ -357,7 +357,7 @@ class RequirementCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '${requirement.ingredient.unit}',
+                      '$requirement.ingredient.unit',
                       style: textTheme?.bodyMedium?.copyWith(fontSize: 13.0),
                     ),
                   ],

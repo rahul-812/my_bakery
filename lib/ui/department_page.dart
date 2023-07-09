@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_bakery/colors.dart';
-import 'package:my_bakery/ui/productoin_page.dart';
+import 'production_page.dart';
 
 import '../backend/db_functions.dart';
 
@@ -18,7 +18,7 @@ class _DepartmentsPageState extends State<DepartmentsPage> {
   @override
   void initState() {
     super.initState();
-    _futureDepartment = fetchDepartmentData();
+    _futureDepartment = fetchDepartmentsData();
   }
 
   @override

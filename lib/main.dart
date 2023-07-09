@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'ui/current_stock.dart';
 
 import 'theme.dart';
 import 'colors.dart';
@@ -8,7 +7,6 @@ import 'ui/ingredient_page.dart';
 import 'ui/department_page.dart';
 import 'ui/login_page.dart';
 import 'backend/db_functions.dart';
-import 'model/ingredient_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

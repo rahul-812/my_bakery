@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:my_bakery/main.dart';
+import '../util.dart';
 
 import '../model/ingredient_model.dart';
 import '../model/requirement_model.dart';
