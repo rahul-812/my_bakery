@@ -4,9 +4,10 @@ import 'ui/current_stock.dart';
 
 import 'theme.dart';
 import 'colors.dart';
-import 'ui/department.dart';
-import 'ui/admin_signin.dart';
-import 'backend/cloud_storage.dart';
+import 'ui/ingredient_page.dart';
+import 'ui/department_page.dart';
+import 'ui/login_page.dart';
+import 'backend/db_functions.dart';
 import 'model/ingredient_model.dart';
 
 void main() async {
@@ -76,14 +77,14 @@ class _UiPageHolderState extends State<UiPageHolder> {
             ),
             label: 'Products',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(
-          //     _currentIndex != 2
-          //         ? Icons.access_time_sharp
-          //         : Icons.access_time_filled,
-          //   ),
-          //   label: 'History',
-          // )
+          BottomNavigationBarItem(
+            icon: Icon(
+              _currentIndex != 2
+                  ? Icons.access_time_sharp
+                  : Icons.access_time_filled,
+            ),
+            label: 'History',
+          )
         ],
       ),
     );
