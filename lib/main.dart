@@ -1,21 +1,24 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'theme.dart';
 import 'colors.dart';
 import 'ui/ingredient_page.dart';
 import 'ui/department_page.dart';
 import 'ui/login_page.dart';
-import 'backend/db_functions.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  final prefs = await SharedPreferences.getInstance();
+  runApp(MyApp(isLoggedIn: prefs.getBool('logged_in') ?? false));
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({super.key, required this.isLoggedIn});
+
+  final bool isLoggedIn;
 
   @override
   Widget build(BuildContext context) {
@@ -23,12 +26,17 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       theme: CustomTheme.light,
-      home: const UiPageHolder(
-        screens: [
-          CurrentStockPage(),
-          DepartmentsPage(),
-        ],
-      ),
+      routes: {
+        'home': (_) => const UiPageHolder(
+              screens: [
+                CurrentStockPage(),
+                DepartmentsPage(),
+              ],
+            ),
+        'signin': (_) => const AdminSignInPage(),
+      },
+      initialRoute: isLoggedIn ? 'home' : 'signin',
+      home: const AdminSignInPage(),
     );
   }
 }
@@ -53,36 +61,45 @@ class _UiPageHolderState extends State<UiPageHolder> {
         centerTitle: true,
         title: const Text('Swadesh Bakery'),
       ),
+      drawer: Drawer(
+        width: 230.0,
+        elevation: 0.0,
+        child: SafeArea(
+          child: Column(
+            children: const [
+              Text('Swadesh Bakery'),
+              Text('rsk8529@gmail.com'),
+            ],
+          ),
+        ),
+      ),
       body: IndexedStack(
         index: _currentIndex,
         children: widget.screens,
       ),
       bottomNavigationBar: BottomNavigationBar(
+        elevation: 0.0,
+        showUnselectedLabels: false,
+        unselectedItemColor: LightColors.lightText,
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
-        items: [
+        items: const [
           BottomNavigationBarItem(
-            icon: Icon(
-              _currentIndex != 0
-                  ? Icons.factory_outlined
-                  : Icons.factory_rounded,
-            ),
+            icon: Icon(Icons.factory_outlined),
             label: 'Stock',
           ),
           BottomNavigationBarItem(
-            icon: Icon(
-              _currentIndex != 1 ? Icons.cookie_outlined : Icons.cookie_rounded,
-            ),
+            icon: Icon(Icons.cookie_outlined),
             label: 'Products',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              _currentIndex != 2
-                  ? Icons.access_time_sharp
-                  : Icons.access_time_filled,
-            ),
-            label: 'History',
-          )
+          // BottomNavigationBarItem(
+          //   icon: Icon(
+          //     _currentIndex != 2
+          //         ? Icons.access_time_sharp
+          //         : Icons.access_time_filled,
+          //   ),
+          //   label: 'History',
+          // )
         ],
       ),
     );

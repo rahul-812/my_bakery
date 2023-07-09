@@ -39,8 +39,10 @@ dependencies:
   provider: ^6.0.5
   flutter_svg: ^2.0.4
   google_fonts: ^4.0.3
+  firebase_auth: ^4.6.3
   firebase_core: ^2.13.1
   cloud_firestore: ^4.8.0
+  shared_preferences: ^2.2.0
   font_awesome_flutter: ^10.4.0
 
 dev_dependencies:

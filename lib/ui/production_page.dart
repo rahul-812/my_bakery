@@ -14,7 +14,9 @@ class ButtonState extends ChangeNotifier {
   bool disabled = false;
 
   void deactivate(bool value) {
+    if (disabled == value) return;
     disabled = value;
+    notifyListeners();
   }
 }
 
@@ -29,7 +31,7 @@ class ProductionPage extends StatefulWidget {
 
 class _ProductionPageState extends State<ProductionPage> {
   final batchController = TextEditingController(text: '1');
-   //* packateController value must be greater than 1 otherwise calculaterate() will return infinity
+  //* packateController value must be greater than 1 otherwise calculaterate() will return infinity
   final packetController = TextEditingController(text: '1');
   late final List<Requirement> _requirements;
   final makeButtonState = ButtonState();
@@ -44,13 +46,13 @@ class _ProductionPageState extends State<ProductionPage> {
       if (requirement.quantity == null) continue;
 
       // Filtered only ingredients whose quantity is not null
-      final initialCost =
-          requirement.quantity! * requirement.ingredient!.latestRate;
       requirement
         ..ingredient = Ingredients.data!
             .singleWhere((ingredient) => ingredient.name == requirement.name)
         ..qController = TextEditingController(text: '${requirement.quantity}')
-        ..qController = TextEditingController(text: '$initialCost')
+        ..pController = TextEditingController(
+          text: '${requirement.quantity! * requirement.ingredient!.latestRate}',
+        )
         ..hasEnough = requirement.quantity! <= requirement.ingredient!.quantity;
       if (!makeButtonState.disabled && !requirement.hasEnough!) {
         makeButtonState.disabled = true;
@@ -74,27 +76,18 @@ class _ProductionPageState extends State<ProductionPage> {
     if (text.isEmpty) return;
 
     final batch = text.toInt;
-    bool canMakeProduct = makeButtonState.disabled;
+    bool canMakeProduct = true;
 
     for (var requirement in _requirements) {
       // Ignore if not ingredient
-      if (requirement.quantity == null) return;
+      if (requirement.quantity == null) continue;
 
       final requiredQuantity = requirement.quantity! * batch;
       final ifQuantityExceeds =
           requiredQuantity > requirement.ingredient!.quantity;
-      // If not enough stock for this ingredient
-      requirement.canDeductFromStock(ifQuantityExceeds);
 
-      // if (!ifQuantityExceeds) {
-      //   requirement.canDeductFromStock(false);
-      //   if (!makeButtonState.disabled) {
-      //     makeButtonState.deactivate(true);
-      //   }
-      // } else {
-      //   requirement.canDeductFromStock(true);
-      //   if (makeButtonState.disabled) makeButtonState.deactivate(false);
-      // }
+      // If not enough stock for this ingredient
+      requirement.canDeductFromStock(!ifQuantityExceeds);
 
       if (ifQuantityExceeds) canMakeProduct = false;
 
@@ -105,7 +98,7 @@ class _ProductionPageState extends State<ProductionPage> {
     makeButtonState.deactivate(!canMakeProduct);
   }
 
-   num calculateRate() {
+  num calculateRate() {
     num totalCost = 0;
     int totalPackets = packetController.text.toInt;
     for (var requirement in _requirements) {
@@ -122,8 +115,8 @@ class _ProductionPageState extends State<ProductionPage> {
       if (requirement.quantity != null) {
         debugPrint(
             '[deductIngredients()] Deducting ${requirement.ingredient!.name}');
-        await useIngredient(requirement.ingredient!,
-            requirement.qController!.text.toNum);
+        await useIngredient(
+            requirement.ingredient!, requirement.qController!.text.toNum);
       }
     }
   }
@@ -190,7 +183,9 @@ class _ProductionPageState extends State<ProductionPage> {
                     ),
                   ),
                   const SizedBox(width: 14.0),
-                  Expanded(child: MyTextField(controller: packetController,hint: 'Packets')),
+                  Expanded(
+                      child: MyTextField(
+                          controller: packetController, hint: 'Packets')),
                 ],
               ),
               const SizedBox(height: 35.0),
@@ -223,19 +218,22 @@ class _ProductionPageState extends State<ProductionPage> {
           value: makeButtonState,
           child: Consumer<ButtonState>(
             builder: (_, makeButtonState, child) => MaterialButton(
-              onPressed: makeButtonState.disabled ? null :() async {
-                num rate = calculateRate();
-                debugPrint('rate : $rate');
-                await deductIngredients();
-                await addProductStock('Hand Biscuit', widget.product.key , packetController.text.toInt , rate);
-              },
+              onPressed: makeButtonState.disabled
+                  ? null
+                  : () async {
+                      num rate = calculateRate();
+                      debugPrint('rate : $rate');
+                      await deductIngredients();
+                      await addProductStock('Hand Biscuit', widget.product.key,
+                          packetController.text.toInt, rate);
+                    },
               disabledColor: const Color(0xFFD8D8D8),
               elevation: 0.0,
               disabledTextColor: Colors.black,
               highlightElevation: 0.0,
               minWidth: double.infinity,
               shape: const StadiumBorder(),
-              color: const Color(0xFF3E4341),
+              color: Colors.black87,
               height: 46.0,
               textColor: Colors.white,
               child: child,
@@ -287,13 +285,12 @@ class RequirementCard extends StatelessWidget {
     final isIngredient = requirement.qController != null;
 
     return Container(
-      // height: 110.0,
       decoration: BoxDecoration(
         color: LightColors.greyCard,
         borderRadius: BorderRadius.circular(12.0),
         border: Border.all(color: const Color(0xFFEBEDEE)),
       ),
-      padding: const EdgeInsets.symmetric(vertical: 15.0),
+      padding: const EdgeInsets.symmetric(vertical: 10.0),
       child: ChangeNotifierProvider.value(
         value: requirement,
         child: Column(
@@ -374,9 +371,9 @@ class RequirementCard extends StatelessWidget {
                   const Spacer(),
                   const Icon(Icons.currency_rupee, size: 15.0),
                   SizedBox(
-                    width: 35.0,
+                    width: 50.0,
                     child: _RequirementTextField(
-                      controller: requirement.qController,
+                      controller: requirement.pController,
                       style: Theme.of(context)
                           .textTheme
                           .bodyMedium

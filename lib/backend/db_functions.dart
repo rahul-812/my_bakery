@@ -209,4 +209,3 @@ Future<dynamic> addNewIngredient(String name, String unit) async {
     "latestRate": 0.00,
   });
 }
-

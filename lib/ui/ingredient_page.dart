@@ -74,7 +74,7 @@ class StockList extends StatelessWidget {
   Widget build(BuildContext context) {
     final accentColors = AccentColors();
 
-    return ListView.separated(
+    return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 30.0),
@@ -83,7 +83,6 @@ class StockList extends StatelessWidget {
         ingredient: list.elementAt(index),
         avatarColor: accentColors.next,
       ),
-      separatorBuilder: (_, __) => const Divider(),
     );
   }
 }
