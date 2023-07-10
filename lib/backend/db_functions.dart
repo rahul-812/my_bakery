@@ -1,103 +1,16 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import '../util.dart';
 
+import '../model/department_model.dart';
+import '../model/purchase_record_model.dart';
+import '../util.dart';
 import '../model/ingredient_model.dart';
-import '../model/requirement_model.dart';
 
 final db = FirebaseFirestore.instance;
 final ingredientsCollectionRef = db.collection('Ingredients');
 final departmentsCollectionRef = db.collection('departments');
 final purchaseRecordsCollectionRef = db.collection('purchase-history');
-
-class Department {
-  final String name;
-  final Iterable<Product> products;
-
-  const Department(this.name, this.products);
-
-  static Iterable<Product> makeProductList(Map<String, dynamic> data) {
-    return data.entries.map((e) {
-      final Map<String, dynamic> requirementMap = e.value['requirement'];
-      final requirements = requirementMap.entries
-          .map<Requirement>(
-            (entry) => Requirement(name: entry.key, quantity: entry.value),
-          )
-          .toList();
-
-      return Product(
-        e.key,
-        e.value['name'],
-        e.value['quantity'],
-        e.value['rate'],
-        requirements,
-      );
-    });
-  }
-}
-
-class Product {
-  const Product(
-    this.key,
-    this.name,
-    this.quantity,
-    this.rate,
-    this.requirements,
-  );
-
-  final String key;
-  final String name;
-  final num quantity;
-  final num rate;
-  final List<Requirement> requirements;
-
-  // static Map<String, dynamic> formatRequirements(
-  //     Map<String, dynamic> requirements) {
-  //   Map<String, dynamic> formattedRequirements = {
-  //     "ingredients": {},
-  //     "others": []
-  //   };
-  //   requirements.forEach((key, value) {
-  //     if (value == null) {
-  //       formattedRequirements["others"].add(key);
-  //     } else {
-  //       formattedRequirements["ingredients"][key] = value;
-  //     }
-  //   });
-  //   return formattedRequirements;
-  // }
-}
-
-class PurchaseRecord {
-  final String name;
-  final String date;
-  final num previousQuantity;
-  final num addedQuantity;
-  final num totalPrice;
-  final num rate;
-
-  const PurchaseRecord(
-    this.name,
-    this.date,
-    this.previousQuantity,
-    this.addedQuantity,
-    this.rate,
-    this.totalPrice,
-  );
-
-  factory PurchaseRecord.fromMap(Map<String, dynamic> map) {
-    return PurchaseRecord(
-      map['name'],
-      DateFormat('MMM dd, yyyy').format((map['date'] as Timestamp).toDate()),
-      map['previousQuantity'],
-      map['addedQuantity'],
-      map['rate'],
-      map['addedQuantity'] * map['rate'],
-    );
-  }
-}
 
 Future<Iterable<Ingredient>> fetchIngredientsData() async {
   return (await ingredientsCollectionRef.get()).docs.map(

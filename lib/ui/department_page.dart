@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_bakery/colors.dart';
+import '../model/department_model.dart';
+import '../model/product_model.dart';
 import 'production_page.dart';
 
 import '../backend/db_functions.dart';
@@ -34,9 +36,7 @@ class _DepartmentsPageState extends State<DepartmentsPage> {
           return const Center(child: Icon(Icons.error));
         }
         return const Center(
-          child: RepaintBoundary(
-            child: CircularProgressIndicator(),
-          ),
+          child: RepaintBoundary(child: CircularProgressIndicator()),
         );
       },
     );
@@ -55,32 +55,27 @@ class _DepertmentUi extends StatelessWidget {
       length: departments.length,
       child: Column(
         children: [
-          SizedBox(
-            width: double.infinity,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                border: Border(
-                  bottom: BorderSide(color: Colors.blueGrey.shade50),
-                ),
-              ),
-              child: TabBar(
-                isScrollable: true,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 18.0,
-                  vertical: 2.0,
-                ),
-                tabs: departments
-                    .map((department) => Tab(child: Text(department.name)))
-                    .toList(),
-              ),
+          const SizedBox(height: 20.0),
+          Container(
+            alignment: Alignment.centerLeft,
+            margin: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 25.0,
+            ),
+            decoration: BoxDecoration(
+              color: LightColors.blueAccent,
+              borderRadius: BorderRadius.circular(50.0),
+            ),
+            child: TabBar(
+              padding: const EdgeInsets.all(2.0),
+              isScrollable: true,
+              tabs: departments
+                  .map((department) => Tab(child: Text(department.name)))
+                  .toList(),
             ),
           ),
           const SizedBox(height: 20.0),
-          SvgPicture.asset(
-            'images/candy.svg',
-            width: 150.0,
-            height: 150.0,
-          ),
+          SvgPicture.asset('images/recipe_book.svg', height: 184.0),
           const SizedBox(height: 10.0),
           Expanded(
             child: TabBarView(
@@ -115,10 +110,11 @@ class ProductList extends StatelessWidget {
     return ListView.separated(
       itemCount: products.length,
       padding: const EdgeInsets.all(16.0),
-      separatorBuilder: (_, __) => const Divider(),
+      separatorBuilder: (_, __) => const SizedBox(height: 10.0),
       itemBuilder: (_, index) {
         final product = products.elementAt(index);
         return ListTile(
+          tileColor: LightColors.blueAccent,
           onTap: () {
             Navigator.of(context).push(MaterialPageRoute(
               builder: (_) => ProductionPage(product: product),
@@ -130,6 +126,7 @@ class ProductList extends StatelessWidget {
             child: Text(
               product.name[0],
               style: const TextStyle(
+                fontFamily: 'Inter',
                 color: Colors.white,
                 fontSize: 26.0,
                 fontWeight: FontWeight.w300,
@@ -143,10 +140,8 @@ class ProductList extends StatelessWidget {
             ),
           ),
           subtitle: Text(
-            'Rate : ₹${product.rate}',
-            style: theme.bodySmall?.copyWith(
-              fontSize: 14.0,
-            ),
+            'Rate : ₹${product.rate}/packet',
+            style: theme.bodyMedium,
           ),
           trailing: Column(
             children: [
@@ -162,6 +157,7 @@ class ProductList extends StatelessWidget {
                 'Packet',
                 style: theme.bodySmall?.copyWith(
                   fontSize: 12.0,
+                  color: LightColors.main,
                 ),
               ),
             ],

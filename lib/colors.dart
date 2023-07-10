@@ -2,12 +2,12 @@ import 'dart:ui';
 
 mixin LightColors {
   // static const Color main = Color(0xFF5161DA);
-  static const Color main = Color(0xff23cf96);
-  static const Color text = Color(0xff41454c);
-  static const Color textMedium = Color(0xff5b5e65);
+  static const Color main = Color(0xFF0079FF);
+  static const Color text = Color(0xFF1F1F1F);
+  static const Color textMedium = Color(0xFF444746);
   static const Color lightText = Color(0xff97a1b6);
   static const Color warning = Color(0xfff27968);
-  static const Color shadow = Color(0x230054ff);
+  static const Color blueAccent = Color(0xFFE9F3FF);
   static const Color greyCard = Color(0xfff7f7f7);
 }
 

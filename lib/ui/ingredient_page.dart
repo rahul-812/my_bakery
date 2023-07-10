@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:my_bakery/backend/db_functions.dart';
 import 'package:provider/provider.dart';
 
@@ -34,26 +35,25 @@ class _CurrentStockPageState extends State<CurrentStockPage> {
           // Globally accessible
           Ingredients.data ??= snapshot.data!;
 
-          return SingleChildScrollView(
-            child: Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 18.0,
-                    vertical: 18.0,
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(child: SvgPicture.asset('images/shipping_truck.svg')),
+                  const SizedBox(height: 20.0),
+                  Text(
+                    'Ingredient in stock',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyLarge
+                        ?.copyWith(fontWeight: FontWeight.w500, fontSize: 18.0),
                   ),
-                  child: Row(
-                    children: [
-                      Text(
-                        'Ingredient in stock',
-                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                            fontWeight: FontWeight.w500, fontSize: 18.0),
-                      ),
-                    ],
-                  ),
-                ),
-                StockList(list: snapshot.data!),
-              ],
+                  // const SizedBox(height: ),
+                  StockList(list: snapshot.data!),
+                ],
+              ),
             ),
           );
         }
@@ -77,7 +77,7 @@ class StockList extends StatelessWidget {
     return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      padding: const EdgeInsets.fromLTRB(10.0, 0.0, 10.0, 30.0),
+      padding: const EdgeInsets.only(bottom: 20.0),
       itemCount: list.length,
       itemBuilder: (context, index) => GoodsTile(
         ingredient: list.elementAt(index),
@@ -133,24 +133,46 @@ class GoodsTile extends StatelessWidget {
           style: textTheme.bodyLarge,
           overflow: TextOverflow.ellipsis,
         ),
-        subtitle: Row(
-          mainAxisSize: MainAxisSize.min,
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Rate :', style: textTheme.bodyMedium),
-            const Padding(
-              padding: EdgeInsets.all(5.0),
-              child: Icon(
-                Icons.currency_rupee_rounded,
-                size: 15.0,
-                color: LightColors.main,
-              ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Rate :', style: textTheme.bodyMedium),
+                const Icon(
+                  Icons.currency_rupee_rounded,
+                  size: 12.0,
+                  color: LightColors.main,
+                ),
+                Consumer<Ingredient>(
+                  builder: (context, ingredient, child) => Text(
+                    '${ingredient.averageRate}/${ingredient.unit}',
+                    style: textTheme.bodyMedium,
+                  ),
+                ),
+              ],
             ),
-            Consumer<Ingredient>(
-              builder: (context, ingredient, child) => Text(
-                '${ingredient.averageRate}/${ingredient.unit}',
-                style: textTheme.bodyMedium,
-              ),
-            ),
+            // Row(
+            //   mainAxisSize: MainAxisSize.min,
+            //   children: [
+            //     Text('Current Rate :', style: textTheme.bodyMedium),
+            //     const Padding(
+            //       padding: EdgeInsets.all(5.0),
+            //       child: Icon(
+            //         Icons.currency_rupee_rounded,
+            //         size: 15.0,
+            //         color: LightColors.main,
+            //       ),
+            //     ),
+            //     Consumer<Ingredient>(
+            //       builder: (context, ingredient, child) => Text(
+            //         '${ingredient.latestRate}/${ingredient.unit}',
+            //         style: textTheme.bodyMedium,
+            //       ),
+            //     ),
+            //   ],
+            // ),
           ],
         ),
         trailing: Consumer<Ingredient>(
@@ -233,16 +255,31 @@ class EditStockDialog extends StatelessWidget {
     );
 
     return AlertDialog(
-      title: Text(
-        ingredient.name,
-        textAlign: TextAlign.center,
-        style: textTheme.titleLarge?.copyWith(color: LightColors.text),
+      title: Wrap(
+        spacing: 10.0,
+        alignment: WrapAlignment.center,
+        crossAxisAlignment: WrapCrossAlignment.center,
+        children: [
+          Text(
+            ingredient.name,
+            textAlign: TextAlign.center,
+            style: textTheme.bodyLarge?.copyWith(fontSize: 20.0),
+          ),
+          Text(
+            '${ingredient.quantity} ${ingredient.unit}',
+            textAlign: TextAlign.center,
+            style: textTheme.bodyLarge?.copyWith(
+              fontSize: 20.0,
+              color: LightColors.main,
+            ),
+          ),
+        ],
       ),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           const Text(
-            'You can add incoming ingredients in your inventory or edit current price per unit',
+            'Add incoming amount of ingredients and toal cost',
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 20.0),
@@ -252,7 +289,7 @@ class EditStockDialog extends StatelessWidget {
               children: [
                 MyTextField(
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
+                    if (value?.isEmpty ?? true) {
                       return 'Enter additional quantity';
                     }
                     return null;

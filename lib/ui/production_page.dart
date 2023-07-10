@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import '../model/product_model.dart';
 import '../util.dart';
 import '../backend/db_functions.dart';
 import '../colors.dart';
@@ -184,8 +185,11 @@ class _ProductionPageState extends State<ProductionPage> {
                   ),
                   const SizedBox(width: 14.0),
                   Expanded(
-                      child: MyTextField(
-                          controller: packetController, hint: 'Packets')),
+                    child: MyTextField(
+                      controller: packetController,
+                      hint: 'Packets',
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 35.0),
@@ -354,7 +358,7 @@ class RequirementCard extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      '$requirement.ingredient.unit',
+                      requirement.ingredient!.unit,
                       style: textTheme?.bodyMedium?.copyWith(fontSize: 13.0),
                     ),
                   ],

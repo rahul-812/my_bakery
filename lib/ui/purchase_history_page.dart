@@ -1,9 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:my_bakery/backend/db_functions.dart';
 
-class PurchaseHistoryPage extends StatelessWidget {
-  PurchaseHistoryPage({super.key});
+import '../model/purchase_record_model.dart';
 
+class PurchaseHistoryPage extends StatefulWidget {
+  const PurchaseHistoryPage({super.key});
+
+  @override
+  State<PurchaseHistoryPage> createState() => _PurchaseHistoryPageState();
+}
+
+class _PurchaseHistoryPageState extends State<PurchaseHistoryPage> {
   final Future<Iterable<PurchaseRecord>> _futurePurchaseHistory =
       fetchPurchaseRecords(DateTime(2023, 6, 13), DateTime.now());
 

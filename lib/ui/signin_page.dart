@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:my_bakery/colors.dart';
 import 'package:provider/provider.dart';
 
 import '../backend/auth.dart';
@@ -91,8 +92,8 @@ class _AdminSignInPageState extends State<AdminSignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    const bg = Color(0xFFFFEED3);
-    const icon = Color(0xFFCB9F59);
+    const icon = LightColors.main;
+    const text = Color(0xFF2F383E);
     bool obscurePassword = true;
 
     final mainContent = SingleChildScrollView(
@@ -101,36 +102,35 @@ class _AdminSignInPageState extends State<AdminSignInPage> {
         key: _formKey,
         child: Column(
           children: [
-            SvgPicture.asset(
-              'images/login_vector.svg',
-              // width: 182.0,
-              height: 198.0,
-            ),
+            SvgPicture.asset('images/signin.svg', height: 200.0),
             const SizedBox(height: 20.0),
             const Text(
-              'Welcome Admin',
+              'Hi there',
               style: TextStyle(
                 fontSize: 32.0,
                 fontWeight: FontWeight.w500,
-                color: Color(0xFF37474F),
+                color: text,
+                fontFamily: 'Inter',
               ),
             ),
-            const SizedBox(height: 8.0),
             const SizedBox(
               width: 255.0,
               child: Text(
                 'Log in with provided email & password if you are admin',
-                style: TextStyle(color: Color(0xFF837053)),
+                style: TextStyle(color: text),
                 textAlign: TextAlign.center,
               ),
             ),
-            const SizedBox(height: 30.0),
+            const SizedBox(height: 40.0),
             SignInTextField(
               hint: 'Email Id',
               validator: _emailValidator,
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
-              prefixIcon: const Icon(Icons.alternate_email, color: icon),
+              prefixIcon: const Icon(
+                Icons.alternate_email,
+                color: icon,
+              ),
             ),
             const SizedBox(height: 20.0),
             StatefulBuilder(
@@ -142,9 +142,8 @@ class _AdminSignInPageState extends State<AdminSignInPage> {
                 keyboardType: TextInputType.visiblePassword,
                 prefixIcon: const Icon(Icons.lock_outline_rounded, color: icon),
                 suffixIcon: IconButton(
-                  onPressed: () => setState(() {
-                    obscurePassword = !obscurePassword;
-                  }),
+                  onPressed: () =>
+                      setState(() => obscurePassword = !obscurePassword),
                   icon: obscurePassword
                       ? const Icon(Icons.visibility_off_outlined, color: icon)
                       : const Icon(Icons.visibility_outlined, color: icon),
@@ -159,8 +158,8 @@ class _AdminSignInPageState extends State<AdminSignInPage> {
               highlightElevation: 0.0,
               minWidth: double.infinity,
               shape: const StadiumBorder(),
-              color: const Color(0xFFE9A538),
-              splashColor: const Color(0xFFA56C0F),
+              color: LightColors.main,
+              textColor: Colors.white,
               child: const Text('Sign In'),
             ),
           ],
@@ -171,15 +170,7 @@ class _AdminSignInPageState extends State<AdminSignInPage> {
     return ChangeNotifierProvider.value(
       value: _loadingOverlay,
       child: Scaffold(
-        backgroundColor: bg,
-        appBar: AppBar(
-          toolbarHeight: 0.0,
-          systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
-            statusBarColor: bg,
-            systemNavigationBarColor: bg,
-            systemNavigationBarIconBrightness: Brightness.dark,
-          ),
-        ),
+        appBar: AppBar(),
         body: Consumer<LoadingOverlay>(
           builder: (_, overlay, __) => overlay.show
               ? Stack(
@@ -225,7 +216,7 @@ class SignInTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     final outlinedBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(9.0),
-      borderSide: const BorderSide(color: Color(0xFFFFDBA3)),
+      borderSide: const BorderSide(color: Color(0xFFA3B2FF)),
     );
 
     return TextFormField(
@@ -234,16 +225,16 @@ class SignInTextField extends StatelessWidget {
       obscureText: obscure,
       keyboardType: keyboardType,
       style: const TextStyle(
-        color: Color(0xFFA96C0A),
+        color: LightColors.main,
         fontWeight: FontWeight.w400,
       ),
       decoration: InputDecoration(
         filled: true,
         isDense: false,
-        fillColor: const Color(0xFFFFE6BE),
+        fillColor: const Color(0xFFF9FAFF),
         hintText: hint,
         hintStyle: const TextStyle(
-          color: Color(0xFFCB9F59),
+          color: Color(0xFF828BB6),
           fontWeight: FontWeight.w400,
         ),
         enabledBorder: outlinedBorder,

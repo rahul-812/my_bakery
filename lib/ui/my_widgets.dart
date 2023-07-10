@@ -30,17 +30,16 @@ class MyTextField extends StatelessWidget {
       key: key,
       onChanged: onChanged,
       validator: validator,
-      style: textTheme.bodyLarge,
+      style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400),
       controller: controller,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: textTheme.bodySmall?.copyWith(
-          fontSize: 13.0,
-          fontWeight: FontWeight.w500,
-        ),
         labelText: label,
-        prefix: prefix,
+        prefix: Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: prefix,
+        ),
         suffix: suffix,
       ),
     );

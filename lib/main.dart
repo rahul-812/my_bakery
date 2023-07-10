@@ -1,12 +1,15 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:my_bakery/ui/purchase_history_page.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'theme.dart';
 import 'colors.dart';
 import 'ui/ingredient_page.dart';
 import 'ui/department_page.dart';
-import 'ui/login_page.dart';
+import 'ui/signin_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,12 +34,12 @@ class MyApp extends StatelessWidget {
               screens: [
                 CurrentStockPage(),
                 DepartmentsPage(),
+                PurchaseHistoryPage(),
               ],
             ),
         'signin': (_) => const AdminSignInPage(),
       },
       initialRoute: isLoggedIn ? 'home' : 'signin',
-      home: const AdminSignInPage(),
     );
   }
 }
@@ -56,50 +59,27 @@ class _UiPageHolderState extends State<UiPageHolder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        shape: const Border(bottom: BorderSide(color: LightColors.greyCard)),
-        centerTitle: true,
-        title: const Text('Swadesh Bakery'),
-      ),
-      drawer: Drawer(
-        width: 230.0,
-        elevation: 0.0,
-        child: SafeArea(
-          child: Column(
-            children: const [
-              Text('Swadesh Bakery'),
-              Text('rsk8529@gmail.com'),
-            ],
-          ),
-        ),
-      ),
-      body: IndexedStack(
-        index: _currentIndex,
-        children: widget.screens,
-      ),
+      appBar: AppBar(),
+      body: widget.screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
-        elevation: 0.0,
-        showUnselectedLabels: false,
-        unselectedItemColor: LightColors.lightText,
         currentIndex: _currentIndex,
+        // onTap: (index) => setState(() => _currentIndex = index),
         onTap: (index) => setState(() => _currentIndex = index),
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.factory_outlined),
+            icon: SvgPicture.asset('icons/warehouse.svg'),
             label: 'Stock',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.cookie_outlined),
+            icon: SvgPicture.asset('icons/pancake.svg'),
             label: 'Products',
           ),
-          // BottomNavigationBarItem(
-          //   icon: Icon(
-          //     _currentIndex != 2
-          //         ? Icons.access_time_sharp
-          //         : Icons.access_time_filled,
-          //   ),
-          //   label: 'History',
-          // )
+          BottomNavigationBarItem(
+            icon: SvgPicture.asset(
+              'icons/history.svg',
+            ),
+            label: 'History',
+          ),
         ],
       ),
     );
