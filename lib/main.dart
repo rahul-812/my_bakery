@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:my_bakery/ui/purchase_history_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'theme.dart';
 import 'colors.dart';
@@ -65,18 +66,20 @@ class _UiPageHolderState extends State<UiPageHolder> {
         currentIndex: _currentIndex,
         // onTap: (index) => setState(() => _currentIndex = index),
         onTap: (index) => setState(() => _currentIndex = index),
-        items: [
+        items: const [
           BottomNavigationBarItem(
-            icon: SvgPicture.asset('icons/warehouse.svg'),
+            icon: Icon(FontAwesomeIcons.warehouse, size: 20.0),
             label: 'Stock',
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset('icons/pancake.svg'),
+            icon: Icon(
+              FontAwesomeIcons.cookie,
+            ),
             label: 'Products',
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              'icons/history.svg',
+            icon: Icon(
+              FontAwesomeIcons.calendarDays,
             ),
             label: 'History',
           ),

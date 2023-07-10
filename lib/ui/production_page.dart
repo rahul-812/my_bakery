@@ -180,14 +180,16 @@ class _ProductionPageState extends State<ProductionPage> {
                     child: MyTextField(
                       onChanged: _onTextChange,
                       controller: batchController,
-                      hint: 'Total batches',
+                      label: 'Total batches',
+                      prefix: const Icon(FontAwesomeIcons.cubes, size: 20.0),
                     ),
                   ),
                   const SizedBox(width: 14.0),
                   Expanded(
                     child: MyTextField(
                       controller: packetController,
-                      hint: 'Packets',
+                      label: 'Packets',
+                      prefix: const Icon(FontAwesomeIcons.boxOpen, size: 16.0),
                     ),
                   ),
                 ],
@@ -313,7 +315,7 @@ class RequirementCard extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(FontAwesomeIcons.wheatAwn, size: 15.0),
+                    // const Icon(FontAwesomeIcons.wheatAwn, size: 15.0),
                     const SizedBox(width: 10.0),
                     Text(
                       requirement.name,
@@ -357,9 +359,12 @@ class RequirementCard extends StatelessWidget {
                         ),
                       ),
                     ),
-                    Text(
-                      requirement.ingredient!.unit,
-                      style: textTheme?.bodyMedium?.copyWith(fontSize: 13.0),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 3.0),
+                      child: Text(
+                        requirement.ingredient!.unit,
+                        style: textTheme?.bodyMedium?.copyWith(fontSize: 13.0),
+                      ),
                     ),
                   ],
                 ),

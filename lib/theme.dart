@@ -4,10 +4,6 @@ import 'colors.dart';
 class CustomTheme {
   /// Dark Theme
   static ThemeData get light {
-    const errorBorder = OutlineInputBorder(
-      borderSide: BorderSide(width: 1.0, color: Colors.redAccent),
-    );
-
     return ThemeData.light(useMaterial3: true).copyWith(
       scaffoldBackgroundColor: Colors.white,
       colorScheme: const ColorScheme.light(primary: LightColors.main),
@@ -75,8 +71,10 @@ class CustomTheme {
       ),
       dialogTheme: const DialogTheme(elevation: 0.0),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        selectedItemColor: LightColors.text,
-        unselectedItemColor: LightColors.textMedium,
+        // selectedItemColor: LightColors.text,
+        unselectedItemColor: Color.fromARGB(255, 193, 198, 210),
+        showSelectedLabels: false,
+        showUnselectedLabels: false,
         selectedLabelStyle: TextStyle(
           fontSize: 13.0,
           fontFamily: 'Inger',

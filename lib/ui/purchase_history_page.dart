@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_bakery/backend/db_functions.dart';
+import 'package:my_bakery/colors.dart';
 
 import '../model/purchase_record_model.dart';
 
@@ -30,9 +31,7 @@ class _PurchaseHistoryPageState extends State<PurchaseHistoryPage> {
               Center(
                 child: Text(
                   'Purchase History',
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Colors.deepPurpleAccent,
-                      ),
+                  style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ),
               HistoryTable(history: snapshot.data!),
@@ -57,10 +56,10 @@ class HistoryTable extends StatelessWidget {
         fontSize: 12.5,
         color: Colors.grey,
       ),
-      headingTextStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-          fontWeight: FontWeight.w600,
-          fontSize: 12.5,
-          color: Colors.deepPurpleAccent),
+      headingTextStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+            fontSize: 13,
+            color: LightColors.main,
+          ),
       dividerThickness: 0.0,
       showBottomBorder: true,
       columnSpacing: 10,
