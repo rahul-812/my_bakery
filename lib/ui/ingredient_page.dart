@@ -74,7 +74,7 @@ class StockList extends StatelessWidget {
   Widget build(BuildContext context) {
     final accentColors = AccentColors();
 
-    return ListView.separated(
+    return ListView.builder(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.only(bottom: 20.0),
@@ -83,7 +83,6 @@ class StockList extends StatelessWidget {
         ingredient: list.elementAt(index),
         avatarColor: accentColors.next,
       ),
-      separatorBuilder: (context, index) => const SizedBox(height: 10.0),
     );
   }
 }
@@ -116,7 +115,6 @@ class GoodsTile extends StatelessWidget {
     return ChangeNotifierProvider.value(
       value: ingredient,
       child: ListTile(
-        tileColor: LightColors.blueAccent,
         onTap: () => _openEditDialog(context),
         leading: CircleAvatar(
           radius: 20.0,
