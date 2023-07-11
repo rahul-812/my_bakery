@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_bakery/colors.dart';
+import 'package:my_bakery/model/ingredient_model.dart';
+import 'package:my_bakery/util.dart';
+import 'package:provider/provider.dart';
 import '../model/department_model.dart';
 import '../model/product_model.dart';
 import 'production_page.dart';
@@ -15,24 +18,21 @@ class DepartmentsPage extends StatefulWidget {
 }
 
 class _DepartmentsPageState extends State<DepartmentsPage> {
-  late final Future<Iterable<Department>> _futureDepartment;
-
   @override
   void initState() {
     super.initState();
-    _futureDepartment = fetchDepartmentsData();
+    AppFutures.futureDepartment ??= fetchDepartmentsData();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Iterable<Department>>(
-      future: _futureDepartment,
+    return FutureBuilder<List<Department>>(
+      future: AppFutures.futureDepartment,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return _DepertmentUi(departments: snapshot.data!);
         }
         if (snapshot.hasError) {
-          debugPrint(snapshot.error.toString());
           return const Center(child: Icon(Icons.error));
         }
         return const Center(
@@ -46,7 +46,7 @@ class _DepartmentsPageState extends State<DepartmentsPage> {
 class _DepertmentUi extends StatelessWidget {
   const _DepertmentUi({required this.departments});
 
-  final Iterable<Department> departments;
+  final List<Department> departments;
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +83,7 @@ class _DepertmentUi extends StatelessWidget {
                   .map((department) => ProductList(
                         products: department.products,
                         theme: textTheme,
+                        department: department.name,
                       ))
                   .toList(),
             ),
@@ -98,14 +99,31 @@ class ProductList extends StatelessWidget {
     super.key,
     required this.products,
     required this.theme,
+    required this.department,
   });
 
   final TextTheme theme;
-  final Iterable<Product> products;
+  final List<Product> products;
+  final String department;
+
+  void _initProductionPage(
+    BuildContext context,
+    Product product,
+    List<Ingredient> data,
+  ) {
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => ProductionPage(
+        product: product,
+        ingredients: data,
+        department: department,
+      ),
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
     final accentColors = AccentColors();
+    final data = context.read<Ingredients>().data!;
 
     return ListView.separated(
       itemCount: products.length,
@@ -113,54 +131,57 @@ class ProductList extends StatelessWidget {
       separatorBuilder: (_, __) => const SizedBox(height: 10.0),
       itemBuilder: (_, index) {
         final product = products.elementAt(index);
-        return ListTile(
-          tileColor: LightColors.blueAccent,
-          onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => ProductionPage(product: product),
-            ));
-          },
-          leading: CircleAvatar(
-            radius: 20.0,
-            backgroundColor: accentColors.next,
-            child: Text(
-              product.name[0],
-              style: const TextStyle(
-                fontFamily: 'Inter',
-                color: Colors.white,
-                fontSize: 26.0,
-                fontWeight: FontWeight.w300,
-              ),
-            ),
-          ),
-          title: Text(
-            product.name,
-            style: theme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-          subtitle: Text(
-            'Rate : ₹${product.rate}/packet',
-            style: theme.bodyMedium,
-          ),
-          trailing: Column(
-            children: [
-              Text(
-                '${product.quantity}',
+        return ChangeNotifierProvider.value(
+          value: product,
+          child: ListTile(
+            tileColor: LightColors.blueAccent,
+            onTap: () => _initProductionPage(context, product, data),
+            leading: CircleAvatar(
+              radius: 20.0,
+              backgroundColor: accentColors.next,
+              child: Text(
+                product.name[0],
                 style: const TextStyle(
-                  fontSize: 22.0,
-                  fontWeight: FontWeight.w500,
-                  color: LightColors.main,
+                  fontFamily: 'Inter',
+                  color: Colors.white,
+                  fontSize: 26.0,
+                  fontWeight: FontWeight.w300,
                 ),
               ),
-              Text(
-                'Packet',
-                style: theme.bodySmall?.copyWith(
-                  fontSize: 12.0,
-                  color: LightColors.main,
-                ),
+            ),
+            title: Text(
+              product.name,
+              style: theme.bodyLarge?.copyWith(
+                fontWeight: FontWeight.w500,
               ),
-            ],
+            ),
+            subtitle: Consumer<Product>(
+              builder: (_, product, __) => Text(
+                'Rate : ₹${product.rate}/packet',
+                style: theme.bodyMedium,
+              ),
+            ),
+            trailing: Column(
+              children: [
+                Consumer<Product>(
+                  builder: (_, product, __) => Text(
+                    '${product.quantity}',
+                    style: const TextStyle(
+                      fontSize: 22.0,
+                      fontWeight: FontWeight.w500,
+                      color: LightColors.main,
+                    ),
+                  ),
+                ),
+                Text(
+                  'Packet',
+                  style: theme.bodySmall?.copyWith(
+                    fontSize: 12.0,
+                    color: LightColors.main,
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

@@ -1,13 +1,12 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:my_bakery/model/ingredient_model.dart';
 import 'package:my_bakery/ui/purchase_history_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import 'theme.dart';
-import 'colors.dart';
 import 'ui/ingredient_page.dart';
 import 'ui/department_page.dart';
 import 'ui/signin_page.dart';
@@ -31,12 +30,15 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: CustomTheme.light,
       routes: {
-        'home': (_) => const UiPageHolder(
-              screens: [
-                CurrentStockPage(),
-                DepartmentsPage(),
-                PurchaseHistoryPage(),
-              ],
+        'home': (_) => ChangeNotifierProvider(
+              create: (_) => Ingredients(),
+              child: const UiPageHolder(
+                screens: [
+                  CurrentStockPage(),
+                  DepartmentsPage(),
+                  PurchaseHistoryPage(),
+                ],
+              ),
             ),
         'signin': (_) => const AdminSignInPage(),
       },

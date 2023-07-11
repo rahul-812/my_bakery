@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 
 class PurchaseRecord {
@@ -28,4 +29,8 @@ class PurchaseRecord {
       map['addedQuantity'] * map['rate'],
     );
   }
+}
+
+class PurchaseRecords extends ChangeNotifier {
+  static List<PurchaseRecord>? data;
 }

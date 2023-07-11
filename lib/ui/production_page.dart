@@ -22,9 +22,16 @@ class ButtonState extends ChangeNotifier {
 }
 
 class ProductionPage extends StatefulWidget {
-  const ProductionPage({super.key, required this.product});
+  const ProductionPage({
+    super.key,
+    required this.product,
+    required this.ingredients,
+    required this.department,
+  });
 
   final Product product;
+  final List<Ingredient> ingredients;
+  final String department;
 
   @override
   State<ProductionPage> createState() => _ProductionPageState();
@@ -32,10 +39,10 @@ class ProductionPage extends StatefulWidget {
 
 class _ProductionPageState extends State<ProductionPage> {
   final batchController = TextEditingController(text: '1');
-  //* packateController value must be greater than 1 otherwise calculaterate() will return infinity
-  final packetController = TextEditingController(text: '1');
+  final packetController = TextEditingController();
   late final List<Requirement> _requirements;
   final makeButtonState = ButtonState();
+  final loader = LoadingOverlay();
 
   @override
   void initState() {
@@ -48,7 +55,7 @@ class _ProductionPageState extends State<ProductionPage> {
 
       // Filtered only ingredients whose quantity is not null
       requirement
-        ..ingredient = Ingredients.data!
+        ..ingredient = widget.ingredients
             .singleWhere((ingredient) => ingredient.name == requirement.name)
         ..qController = TextEditingController(text: '${requirement.quantity}')
         ..pController = TextEditingController(
@@ -99,122 +106,137 @@ class _ProductionPageState extends State<ProductionPage> {
     makeButtonState.deactivate(!canMakeProduct);
   }
 
-  num calculateRate() {
-    num totalCost = 0;
+  num _calculateRate() {
     int totalPackets = packetController.text.toInt;
-    for (var requirement in _requirements) {
-      totalCost += requirement.pController!.text.toNum;
-    }
-    debugPrint(
-        '[calculateRate()] total cost : $totalCost & total packets : $totalPackets');
-    return double.parse((totalCost / totalPackets).toStringAsFixed(2));
+    num totalCost = _requirements.fold(0.0, (previousValue, requirement) {
+      return previousValue + requirement.pController!.text.toNum;
+    });
+    return (totalCost / totalPackets).toStringAsFixed(2).toNum;
   }
 
   Future<void> deductIngredients() async {
     //later we  will merge this functionility in the calculateRate()
     for (var requirement in _requirements) {
       if (requirement.quantity != null) {
-        debugPrint(
-            '[deductIngredients()] Deducting ${requirement.ingredient!.name}');
         await useIngredient(
-            requirement.ingredient!, requirement.qController!.text.toNum);
+          requirement.ingredient!,
+          requirement.qController!.text.toNum,
+        );
       }
     }
+  }
+
+  Future<void> _makeProduct() async {
+    final rate = _calculateRate();
+    await deductIngredients();
+    final totalPacket = packetController.text.toInt;
+    await addToProductStock(
+      widget.department,
+      widget.product.key,
+      totalPacket,
+      rate,
+    );
+    widget.product.rate = rate;
+    widget.product.increasePackets(totalPacket);
   }
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Scaffold(
+    final mainContent = Scaffold(
       appBar: AppBar(
         title: const Text('Production'),
       ),
-      body: SingleChildScrollView(
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20.0),
-          child: Column(
-            children: [
-              Center(
-                child: Text(
-                  widget.product.name,
-                  style: textTheme.bodyLarge?.copyWith(fontSize: 22.0),
+      body: ChangeNotifierProvider.value(
+        value: loader,
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+            child: Column(
+              children: [
+                Center(
+                  child: Text(
+                    widget.product.name,
+                    style: textTheme.bodyLarge?.copyWith(fontSize: 22.0),
+                  ),
                 ),
-              ),
-              Center(
-                child: Wrap(
-                  spacing: 3.5,
-                  // mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: WrapCrossAlignment.center,
+                Center(
+                  child: Wrap(
+                    spacing: 3.5,
+                    // mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text('Product stock', style: textTheme.bodyMedium),
+                      const SizedBox(width: 11.0),
+                      SvgPicture.asset('icons/tag.svg'),
+                      Text(
+                        '${widget.product.quantity}',
+                        style: textTheme.bodyLarge?.copyWith(
+                          fontSize: 14.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        'Packets',
+                        style: textTheme.bodyMedium?.copyWith(fontSize: 11.0),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 35.0),
+                Text(
+                  "Today's production",
+                  style: textTheme.bodyLarge?.copyWith(
+                    fontSize: 15.0,
+                    // color: LightColors.main,
+                  ),
+                ),
+                const SizedBox(height: 12.0),
+                Row(
                   children: [
-                    Text('Product stock', style: textTheme.bodyMedium),
-                    const SizedBox(width: 11.0),
-                    SvgPicture.asset('icons/tag.svg'),
-                    Text(
-                      '${widget.product.quantity}',
-                      style: textTheme.bodyLarge?.copyWith(
-                        fontSize: 14.0,
-                        fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: MyTextField(
+                        onChanged: _onTextChange,
+                        controller: batchController,
+                        label: 'Total batches',
+                        prefix: const Icon(FontAwesomeIcons.cubes, size: 20.0),
                       ),
                     ),
-                    Text(
-                      'Packets',
-                      style: textTheme.bodyMedium?.copyWith(fontSize: 11.0),
+                    const SizedBox(width: 14.0),
+                    Expanded(
+                      child: MyTextField(
+                        controller: packetController,
+                        label: 'Packets',
+                        prefix:
+                            const Icon(FontAwesomeIcons.boxOpen, size: 16.0),
+                      ),
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(height: 35.0),
-              Text(
-                "Today's production",
-                style: textTheme.bodyLarge?.copyWith(
-                  fontSize: 15.0,
-                  // color: LightColors.main,
-                ),
-              ),
-              const SizedBox(height: 12.0),
-              Row(
-                children: [
-                  Expanded(
-                    child: MyTextField(
-                      onChanged: _onTextChange,
-                      controller: batchController,
-                      label: 'Total batches',
-                      prefix: const Icon(FontAwesomeIcons.cubes, size: 20.0),
-                    ),
+                const SizedBox(height: 35.0),
+                Text(
+                  "Ingredients used",
+                  style: textTheme.bodyLarge?.copyWith(
+                    fontSize: 15.0,
+                    // color: LightColors.main,
                   ),
-                  const SizedBox(width: 14.0),
-                  Expanded(
-                    child: MyTextField(
-                      controller: packetController,
-                      label: 'Packets',
-                      prefix: const Icon(FontAwesomeIcons.boxOpen, size: 16.0),
-                    ),
+                ),
+                const SizedBox(height: 12.0),
+                ListView.separated(
+                  padding: const EdgeInsets.only(bottom: 20.0),
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _requirements.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 16.0),
+                  itemBuilder: (_, index) => RequirementCard(
+                    _requirements[index],
+                    textTheme: textTheme,
                   ),
-                ],
-              ),
-              const SizedBox(height: 35.0),
-              Text(
-                "Ingredients used",
-                style: textTheme.bodyLarge?.copyWith(
-                  fontSize: 15.0,
-                  // color: LightColors.main,
                 ),
-              ),
-              const SizedBox(height: 12.0),
-              ListView.separated(
-                padding: const EdgeInsets.only(bottom: 20.0),
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: _requirements.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 16.0),
-                itemBuilder: (_, index) => RequirementCard(
-                  _requirements[index],
-                  textTheme: textTheme,
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -226,12 +248,12 @@ class _ProductionPageState extends State<ProductionPage> {
             builder: (_, makeButtonState, child) => MaterialButton(
               onPressed: makeButtonState.disabled
                   ? null
-                  : () async {
-                      num rate = calculateRate();
-                      debugPrint('rate : $rate');
-                      await deductIngredients();
-                      await addProductStock('Hand Biscuit', widget.product.key,
-                          packetController.text.toInt, rate);
+                  : () {
+                      loader.show = true;
+                      _makeProduct().then((_) {
+                        loader.show = false;
+                        Navigator.of(context).pop();
+                      });
                     },
               disabledColor: const Color(0xFFD8D8D8),
               elevation: 0.0,
@@ -247,6 +269,26 @@ class _ProductionPageState extends State<ProductionPage> {
             child: const Text('Make Product'),
           ),
         ),
+      ),
+    );
+
+    return ChangeNotifierProvider.value(
+      value: loader,
+      child: Consumer<LoadingOverlay>(
+        builder: (_, loader, __) => loader.show
+            ? Stack(
+                children: [
+                  mainContent,
+                  Container(
+                    color: Colors.black38,
+                    alignment: Alignment.center,
+                    child: const RepaintBoundary(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ),
+                ],
+              )
+            : mainContent,
       ),
     );
   }

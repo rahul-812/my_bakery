@@ -1,20 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_bakery/colors.dart';
 import 'package:provider/provider.dart';
 
 import '../backend/auth.dart';
-
-class LoadingOverlay extends ChangeNotifier {
-  bool _show = false;
-  bool get show => _show;
-  set show(bool value) {
-    if (_show == value) return;
-    _show = value;
-    notifyListeners();
-  }
-}
+import '../util.dart';
 
 class AdminSignInPage extends StatefulWidget {
   const AdminSignInPage({super.key});

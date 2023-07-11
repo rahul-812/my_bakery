@@ -1,6 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 
 import '../model/department_model.dart';
 import '../model/purchase_record_model.dart';
@@ -12,24 +10,14 @@ final ingredientsCollectionRef = db.collection('Ingredients');
 final departmentsCollectionRef = db.collection('departments');
 final purchaseRecordsCollectionRef = db.collection('purchase-history');
 
-Future<Iterable<Ingredient>> fetchIngredientsData() async {
-  return (await ingredientsCollectionRef.get()).docs.map(
-        (document) => Ingredient.fromMap(document.id, document.data()),
-      );
+Future<List<Ingredient>> fetchIngredientsData() async {
+  return (await ingredientsCollectionRef.get())
+      .docs
+      .map((document) => Ingredient.fromMap(document.id, document.data()))
+      .toList();
 }
 
-Future<Ingredient> fetchAIngredientData(String ingredientName) async {
-  final document = await ingredientsCollectionRef.doc(ingredientName).get();
-  return Ingredient(
-    document.id,
-    document['unit'],
-    document['quantity'],
-    document['avarageRate'],
-    document['latestRate'],
-  );
-}
-
-Future<void> addIngredientStock(
+Future<PurchaseRecord> addIngredientStock(
   Ingredient ingredient,
   num addedQuantity,
   num totalPrice,
@@ -43,82 +31,60 @@ Future<void> addIngredientStock(
     'latestRate': latestRate
   });
 
-  await addPurchaseRecord(ingredient, addedQuantity, latestRate);
+  return await addPurchaseRecord(ingredient, addedQuantity, latestRate);
 }
 
 Future<void> useIngredient(Ingredient ingredient, num usedQuantity) async {
-  debugPrint('useIngredient($ingredient , $usedQuantity)');
-  if (usedQuantity > 0) {
-    await ingredientsCollectionRef.doc(ingredient.name).update({
-      'quantity': FieldValue.increment(usedQuantity * -1),
-    });
-  } else {
-    await ingredientsCollectionRef.doc(ingredient.name).update({
-      'quantity': FieldValue.increment(usedQuantity),
-    });
-  }
+  await ingredientsCollectionRef.doc(ingredient.name).update({
+    'quantity': FieldValue.increment(-usedQuantity),
+  });
+  ingredient.deductQuantity(usedQuantity);
 }
 
-Future<Iterable<PurchaseRecord>> fetchPurchaseRecords(
-  DateTime startDate,
-  DateTime endDate,
-) async {
+Future<List<PurchaseRecord>> fetchPurchaseRecords() async {
   final querySnapshot = await purchaseRecordsCollectionRef
-      .where('date', isGreaterThanOrEqualTo: startDate)
-      .where('date', isLessThanOrEqualTo: endDate)
       .orderBy('date', descending: true)
       .get();
 
-  return querySnapshot.docs.map((document) => PurchaseRecord.fromMap(
-        document.data(),
-      ));
+  return querySnapshot.docs
+      .map((document) => PurchaseRecord.fromMap(
+            document.data(),
+          ))
+      .toList();
 }
 
-Future<void> addPurchaseRecord(
+Future<PurchaseRecord> addPurchaseRecord(
   Ingredient ingredient,
   num addedQuantity,
   num rate,
 ) async {
   final collectionRef = purchaseRecordsCollectionRef;
-  await collectionRef.add({
-    "date": DateTime.now(),
+  final data = <String, dynamic>{
+    "date": Timestamp.fromDate(DateTime.now()),
     "name": ingredient.name,
     "previousQuantity": ingredient.quantity,
     "addedQuantity": addedQuantity,
     "rate": rate,
-  });
+  };
+  await collectionRef.add(data);
+  return PurchaseRecord.fromMap(data);
 }
 
-Future<Iterable<Department>> fetchDepartmentsData() async {
+Future<List<Department>> fetchDepartmentsData() async {
   final querySnapshot = await departmentsCollectionRef.get();
 
-  return querySnapshot.docs.map((department) => Department(
-        department.id,
-        Department.makeProductList(department.data()),
-      ));
+  return querySnapshot.docs
+      .map((department) => Department(
+            department.id,
+            Department.makeProductList(department.data()),
+          ))
+      .toList();
 }
 
-bool isValidValue(num v) {
-  if ((double.parse("$v") > 0.0)) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
-Future<void> addProductStock(
+Future<void> addToProductStock(
     String departmentName, String productKey, num quantity, num rate) async {
   await departmentsCollectionRef.doc(departmentName).update({
     '$productKey.quantity': FieldValue.increment(quantity),
-    '$productKey.rate': rate
-  });
-}
-
-Future<dynamic> addNewIngredient(String name, String unit) async {
-  return await ingredientsCollectionRef.doc(name).set({
-    "unit": unit,
-    "quantity": 0,
-    "averageRate": 0.00,
-    "latestRate": 0.00,
+    '$productKey.rate': rate,
   });
 }

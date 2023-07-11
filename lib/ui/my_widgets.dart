@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class MyTextField extends StatelessWidget {
   const MyTextField({
     super.key,
     this.controller,
     this.label,
-    this.hint,
     this.hintStyle,
     this.validator,
     this.onChanged,
@@ -14,7 +14,6 @@ class MyTextField extends StatelessWidget {
   });
 
   final String? label;
-  final String? hint;
   final TextStyle? hintStyle;
   final String? Function(String?)? validator;
   final void Function(String)? onChanged;
@@ -30,11 +29,13 @@ class MyTextField extends StatelessWidget {
       key: key,
       onChanged: onChanged,
       validator: validator,
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'^[1-9][0-9]*(\.?[0-9]*)$')),
+      ],
       style: textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w400),
       controller: controller,
       keyboardType: TextInputType.number,
       decoration: InputDecoration(
-        hintText: hint,
         labelText: label,
         prefix: Padding(
           padding: const EdgeInsets.only(right: 8.0),

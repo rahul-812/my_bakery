@@ -36,6 +36,10 @@ class Ingredient with ChangeNotifier {
     notifyListeners();
   }
 
+  void deductQuantity(num value) {
+    _quantity -= value;
+  }
+
   void updateAverageRate(num rate, {bool notify = false}) {
     if (rate == _averageRate) return;
     _averageRate = rate;
@@ -49,6 +53,6 @@ class Ingredient with ChangeNotifier {
   }
 }
 
-class Ingredients {
-  static Iterable<Ingredient>? data;
+class Ingredients extends ChangeNotifier {
+  List<Ingredient>? data;
 }

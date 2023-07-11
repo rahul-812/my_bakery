@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:my_bakery/backend/db_functions.dart';
+import 'package:my_bakery/model/purchase_record_model.dart';
 import 'package:provider/provider.dart';
 
 import '../colors.dart';
@@ -16,24 +17,23 @@ class CurrentStockPage extends StatefulWidget {
 }
 
 class _CurrentStockPageState extends State<CurrentStockPage> {
-  late final Future<Iterable<Ingredient>> _futureStock;
-
   @override
   void initState() {
     super.initState();
-    _futureStock = fetchIngredientsData();
+    AppFutures.futureStock ??= fetchIngredientsData();
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Iterable<Ingredient>>(
-      future: _futureStock,
+    final ingredeints = context.read<Ingredients>();
+    return FutureBuilder<List<Ingredient>>(
+      future: AppFutures.futureStock,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Icon(Icons.error, color: Colors.red);
         } else if (snapshot.hasData) {
-          // Globally accessible
-          Ingredients.data ??= snapshot.data!;
+          // If once assigned value, ingore reassigning
+          ingredeints.data ??= snapshot.data!;
 
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -68,7 +68,7 @@ class _CurrentStockPageState extends State<CurrentStockPage> {
 class StockList extends StatelessWidget {
   const StockList({super.key, required this.list});
 
-  final Iterable<Ingredient> list;
+  final List<Ingredient> list;
 
   @override
   Widget build(BuildContext context) {
@@ -80,8 +80,9 @@ class StockList extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 20.0),
       itemCount: list.length,
       itemBuilder: (context, index) => GoodsTile(
-        ingredient: list.elementAt(index),
+        ingredient: list[index],
         avatarColor: accentColors.next,
+        index: index,
       ),
     );
   }
@@ -92,10 +93,12 @@ class GoodsTile extends StatelessWidget {
     super.key,
     required this.ingredient,
     required this.avatarColor,
+    required this.index,
   });
 
   final Ingredient ingredient;
   final Color avatarColor;
+  final int index;
 
   void _openEditDialog(BuildContext context) {
     showDialog(
@@ -153,48 +156,30 @@ class GoodsTile extends StatelessWidget {
                 ),
               ],
             ),
-            // Row(
-            //   mainAxisSize: MainAxisSize.min,
-            //   children: [
-            //     Text('Current Rate :', style: textTheme.bodyMedium),
-            //     const Padding(
-            //       padding: EdgeInsets.all(5.0),
-            //       child: Icon(
-            //         Icons.currency_rupee_rounded,
-            //         size: 15.0,
-            //         color: LightColors.main,
-            //       ),
-            //     ),
-            //     Consumer<Ingredient>(
-            //       builder: (context, ingredient, child) => Text(
-            //         '${ingredient.latestRate}/${ingredient.unit}',
-            //         style: textTheme.bodyMedium,
-            //       ),
-            //     ),
-            //   ],
-            // ),
           ],
         ),
         trailing: Consumer<Ingredient>(
-          builder: (context, ingredient, child) => ingredient.quantity == 0
-              ? const Icon(
-                  Icons.warning_rounded,
-                  color: LightColors.warning,
-                  size: 30.0,
-                )
-              : Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      '${ingredient.quantity}',
-                      style: textTheme.bodyLarge?.copyWith(
-                        fontWeight: FontWeight.w500,
+          builder: (context, ingredient, child) {
+            return ingredient.quantity == 0
+                ? const Icon(
+                    Icons.warning_rounded,
+                    color: LightColors.warning,
+                    size: 30.0,
+                  )
+                : Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${ingredient.quantity}',
+                        style: textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 4.0),
-                    child!,
-                  ],
-                ),
+                      const SizedBox(width: 4.0),
+                      child!,
+                    ],
+                  );
+          },
           child: Text(
             ingredient.unit,
             style: textTheme.bodyMedium?.copyWith(
@@ -237,12 +222,13 @@ class EditStockDialog extends StatelessWidget {
             .toNum;
 
     addIngredientStock(ingredient, addedQuantity, totalPrice, averageRate)
-        .then((_) {
+        .then((purchaseRecord) {
       ingredient.increaseQuantity(addedQuantity);
       ingredient.updateAverageRate(averageRate);
       ingredient.updateLatestRate(
         (totalPrice / addedQuantity).toStringAsFixed(2).toNum,
       );
+      PurchaseRecords.data?.insert(0, purchaseRecord);
     });
   }
 

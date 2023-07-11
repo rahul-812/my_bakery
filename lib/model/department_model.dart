@@ -3,11 +3,11 @@ import 'requirement_model.dart';
 
 class Department {
   final String name;
-  final Iterable<Product> products;
+  final List<Product> products;
 
   const Department(this.name, this.products);
 
-  static Iterable<Product> makeProductList(Map<String, dynamic> data) {
+  static List<Product> makeProductList(Map<String, dynamic> data) {
     return data.entries.map((e) {
       final Map<String, dynamic> requirementMap = e.value['requirement'];
       final requirements = requirementMap.entries
@@ -23,6 +23,6 @@ class Department {
         e.value['rate'],
         requirements,
       );
-    });
+    }).toList();
   }
 }

@@ -52,22 +52,20 @@ class CustomTheme {
           horizontal: 20.0,
           vertical: 14.0,
         ),
-        hintStyle: TextStyle(
-          fontSize: 13.0,
-          fontWeight: FontWeight.w500,
-          color: LightColors.lightText,
-          fontFamily: 'Inter',
-        ),
         labelStyle: TextStyle(
           fontSize: 14.0,
           fontWeight: FontWeight.w500,
           color: LightColors.lightText,
           fontFamily: 'Inter',
         ),
+        floatingLabelStyle: TextStyle(
+          color: LightColors.main,
+          fontFamily: 'Inter',
+        ),
       ),
       dividerTheme: const DividerThemeData(
-        color: Colors.transparent,
-        space: 0.0,
+        color: Color.fromARGB(255, 238, 240, 242),
+        space: 3.0,
       ),
       dialogTheme: const DialogTheme(elevation: 0.0),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(

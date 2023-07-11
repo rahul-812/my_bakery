@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:my_bakery/backend/db_functions.dart';
 import 'package:my_bakery/colors.dart';
+import 'package:my_bakery/util.dart';
 
 import '../model/purchase_record_model.dart';
 
@@ -12,21 +14,26 @@ class PurchaseHistoryPage extends StatefulWidget {
 }
 
 class _PurchaseHistoryPageState extends State<PurchaseHistoryPage> {
-  final Future<Iterable<PurchaseRecord>> _futurePurchaseHistory =
-      fetchPurchaseRecords(DateTime(2023, 6, 13), DateTime.now());
+  @override
+  void initState() {
+    super.initState();
+    AppFutures.futurePurchaseHistory ??= fetchPurchaseRecords();
+  }
 
   @override
   Widget build(context) {
-    return FutureBuilder<Iterable<PurchaseRecord>>(
-      future: _futurePurchaseHistory,
+    return FutureBuilder<List<PurchaseRecord>>(
+      future: AppFutures.futurePurchaseHistory,
       builder: (context, snapshot) {
         if (snapshot.hasError) {
-          debugPrint(snapshot.error.toString());
           return const Icon(Icons.error);
         } else if (snapshot.hasData) {
-          debugPrint("List: ${snapshot.data!.length}");
+          PurchaseRecords.data ??= snapshot.data!;
+
           return ListView(
             children: [
+              const SizedBox(height: 30),
+              SvgPicture.asset('icons/history.svg', height: 80),
               const SizedBox(height: 10.0),
               Center(
                 child: Text(
@@ -34,11 +41,13 @@ class _PurchaseHistoryPageState extends State<PurchaseHistoryPage> {
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ),
-              HistoryTable(history: snapshot.data!),
+              HistoryTable(history: PurchaseRecords.data!),
             ],
           );
         }
-        return const RepaintBoundary(child: CircularProgressIndicator());
+        return const Center(
+          child: RepaintBoundary(child: CircularProgressIndicator()),
+        );
       },
     );
   }
@@ -47,20 +56,17 @@ class _PurchaseHistoryPageState extends State<PurchaseHistoryPage> {
 class HistoryTable extends StatelessWidget {
   const HistoryTable({super.key, required this.history});
 
-  final Iterable<PurchaseRecord> history;
+  final List<PurchaseRecord> history;
 
   @override
   Widget build(BuildContext context) {
     return DataTable(
-      dataTextStyle: const TextStyle(
-        fontSize: 12.5,
-        color: Colors.grey,
-      ),
-      headingTextStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-            fontSize: 13,
-            color: LightColors.main,
-          ),
-      dividerThickness: 0.0,
+      dataTextStyle: const TextStyle(fontSize: 12.5, color: LightColors.text),
+      headingTextStyle: Theme.of(context)
+          .textTheme
+          .bodyLarge
+          ?.copyWith(fontSize: 13, color: LightColors.main),
+      dividerThickness: 1.0,
       showBottomBorder: true,
       columnSpacing: 10,
       columns: const [
@@ -71,8 +77,7 @@ class HistoryTable extends StatelessWidget {
         DataColumn(label: Text('RATE')),
         DataColumn(label: Text('TOTAL')),
       ],
-      rows: List.generate(history.length, (index) {
-        final currentItem = history.elementAt(index);
+      rows: history.map((currentItem) {
         return DataRow(cells: [
           DataCell(Text(currentItem.date)),
           DataCell(
@@ -87,11 +92,17 @@ class HistoryTable extends StatelessWidget {
             ),
           ),
           DataCell(Text('${currentItem.previousQuantity}')),
-          DataCell(Text('${currentItem.addedQuantity}')),
+          DataCell(Text(
+            '${currentItem.addedQuantity}',
+            style: const TextStyle(color: LightColors.main),
+          )),
           DataCell(Text('₹${currentItem.rate}')),
-          DataCell(Text('₹${currentItem.totalPrice}')),
+          DataCell(Text(
+            '₹${currentItem.totalPrice}',
+            style: const TextStyle(color: LightColors.main),
+          )),
         ]);
-      }),
+      }).toList(),
     );
   }
 }

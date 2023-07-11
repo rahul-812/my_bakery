@@ -84,10 +84,6 @@ flutter:
   # list giving the asset and other descriptors for the font. For
   # example:
   fonts:
-    - family: Satisfy
-      fonts:
-        - asset: fonts/satisfy_regular.ttf
-          # weight: 400
     - family: Inter
       fonts:
         - asset: fonts/inter_light.ttf
